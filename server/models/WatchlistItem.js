@@ -1,4 +1,4 @@
-import mongoose from 'mongoose';
+import mongoose from 'mongoose'
 
 const watchlistItemSchema = new mongoose.Schema({
   userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true, index: true },
@@ -9,7 +9,11 @@ const watchlistItemSchema = new mongoose.Schema({
   releaseYear: Number,
   genres: [String],
   externalRating: Number,
-  ratingSource: { type: String, enum: ['tmdb', 'omdb', 'jikan', 'anilist', 'manual'], default: 'manual' },
+  ratingSource: {
+    type: String,
+    enum: ['tmdb', 'omdb', 'jikan', 'anilist', 'manual'],
+    default: 'manual',
+  },
   status: {
     type: String,
     enum: ['plan_to_watch', 'watching', 'completed', 'on_hold', 'dropped'],
@@ -22,6 +26,6 @@ const watchlistItemSchema = new mongoose.Schema({
   order: { type: Number, default: 0 },
   dateAdded: { type: Date, default: Date.now },
   dateCompleted: Date,
-});
+})
 
-export default mongoose.model('WatchlistItem', watchlistItemSchema);
+export default mongoose.model('WatchlistItem', watchlistItemSchema)

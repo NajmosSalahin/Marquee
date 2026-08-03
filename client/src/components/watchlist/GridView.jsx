@@ -1,5 +1,5 @@
-import { motion } from 'framer-motion';
-import ItemCard from './ItemCard.jsx';
+import { motion } from 'framer-motion'
+import ItemCard from './ItemCard.jsx'
 
 export default function GridView({ items, onItemClick, density, loading }) {
   if (loading) {
@@ -9,11 +9,13 @@ export default function GridView({ items, onItemClick, density, loading }) {
           <div key={i} className="skeleton aspect-[2/3] rounded-lg" />
         ))}
       </div>
-    );
+    )
   }
 
   return (
-    <div className={`grid ${density === 'compact' ? 'grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-7' : 'grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6'}`}>
+    <div
+      className={`grid ${density === 'compact' ? 'grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-7' : 'grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6'}`}
+    >
       {items.map((item) => (
         <motion.div
           key={item._id}
@@ -25,5 +27,5 @@ export default function GridView({ items, onItemClick, density, loading }) {
         </motion.div>
       ))}
     </div>
-  );
+  )
 }

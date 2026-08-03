@@ -1,28 +1,28 @@
-import { useState } from 'react';
-import { Link } from 'react-router-dom';
-import { toast } from 'sonner';
-import { Loader2 } from 'lucide-react';
-import { useAuth } from '../context/AuthContext.jsx';
+import { useState } from 'react'
+import { Link } from 'react-router-dom'
+import { toast } from 'sonner'
+import { Loader2 } from 'lucide-react'
+import { useAuth } from '../context/useAuth.js'
 
 export default function RegisterPage() {
-  const { register } = useAuth();
-  const [username, setUsername] = useState('');
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [submitting, setSubmitting] = useState(false);
+  const { register } = useAuth()
+  const [username, setUsername] = useState('')
+  const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
+  const [submitting, setSubmitting] = useState(false)
 
   const submit = async (e) => {
-    e.preventDefault();
-    setSubmitting(true);
+    e.preventDefault()
+    setSubmitting(true)
     try {
-      await register(username, email, password);
-      toast.success('Welcome to Marquee');
+      await register(username, email, password)
+      toast.success('Welcome to Marquee')
     } catch (err) {
-      toast.error(err.friendlyMessage);
+      toast.error(err.friendlyMessage)
     } finally {
-      setSubmitting(false);
+      setSubmitting(false)
     }
-  };
+  }
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-base px-4">
@@ -32,9 +32,14 @@ export default function RegisterPage() {
             Marquee<span className="text-accent">.</span>
           </span>
         </Link>
-        <form onSubmit={submit} className="space-y-4 rounded-2xl border border-line bg-surface p-6 shadow-card">
+        <form
+          onSubmit={submit}
+          className="space-y-4 rounded-2xl border border-line bg-surface p-6 shadow-card"
+        >
           <div>
-            <label className="label" htmlFor="username">Username</label>
+            <label className="label" htmlFor="username">
+              Username
+            </label>
             <input
               id="username"
               className="input"
@@ -48,7 +53,9 @@ export default function RegisterPage() {
             />
           </div>
           <div>
-            <label className="label" htmlFor="email">Email</label>
+            <label className="label" htmlFor="email">
+              Email
+            </label>
             <input
               id="email"
               type="email"
@@ -60,7 +67,9 @@ export default function RegisterPage() {
             />
           </div>
           <div>
-            <label className="label" htmlFor="password">Password</label>
+            <label className="label" htmlFor="password">
+              Password
+            </label>
             <input
               id="password"
               type="password"
@@ -86,5 +95,5 @@ export default function RegisterPage() {
         </form>
       </div>
     </div>
-  );
+  )
 }

@@ -19,10 +19,11 @@ export default {
       },
       boxShadow: {
         glow: '0 0 0 1px var(--accent), 0 0 30px -4px color-mix(in srgb, var(--accent) 50%, transparent)',
-        'glow-sm': '0 0 0 1px var(--accent), 0 0 16px -4px color-mix(in srgb, var(--accent) 45%, transparent)',
+        'glow-sm':
+          '0 0 0 1px var(--accent), 0 0 16px -4px color-mix(in srgb, var(--accent) 45%, transparent)',
         card: '0 4px 20px -8px rgba(0,0,0,0.5)',
       },
     },
   },
   plugins: [],
-};
+}

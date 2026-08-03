@@ -1,4 +1,4 @@
-import { SOURCE_LABELS } from '../../lib/constants.js';
+import { SOURCE_LABELS } from '../../lib/constants.js'
 
 const SOURCE_STYLE = {
   tmdb: 'text-sky-300/90',
@@ -6,7 +6,7 @@ const SOURCE_STYLE = {
   jikan: 'text-violet-300/90',
   anilist: 'text-teal-300/90',
   manual: 'text-muted',
-};
+}
 
 export default function SourceBadge({ source, className = '' }) {
   return (
@@ -17,5 +17,5 @@ export default function SourceBadge({ source, className = '' }) {
     >
       {SOURCE_LABELS[source] || source}
     </span>
-  );
+  )
 }

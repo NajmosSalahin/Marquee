@@ -31,7 +31,11 @@ html {
 
 body {
   @apply bg-base text-ink font-sans antialiased;
-  background-image: radial-gradient(1200px 500px at 50% -200px, rgba(227, 168, 87, 0.05), transparent 70%);
+  background-image: radial-gradient(
+    1200px 500px at 50% -200px,
+    rgba(227, 168, 87, 0.05),
+    transparent 70%
+  );
 }
 
 ::selection {
@@ -68,11 +72,15 @@ body {
   }
 
   .poster-glow {
-    transition: transform 160ms ease, box-shadow 200ms ease;
+    transition:
+      transform 160ms ease,
+      box-shadow 200ms ease;
   }
   .poster-glow:hover,
   .poster-glow:focus-visible {
-    box-shadow: 0 0 0 1px var(--accent), 0 0 28px -4px color-mix(in srgb, var(--accent) 50%, transparent);
+    box-shadow:
+      0 0 0 1px var(--accent),
+      0 0 28px -4px color-mix(in srgb, var(--accent) 50%, transparent);
     transform: translateY(-2px);
   }
 

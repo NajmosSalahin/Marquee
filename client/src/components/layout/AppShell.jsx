@@ -1,10 +1,10 @@
-import { Outlet } from 'react-router-dom';
-import Header from './Header.jsx';
-import AddPanel from '../add/AddPanel.jsx';
-import { useState } from 'react';
+import { Outlet } from 'react-router-dom'
+import Header from './Header.jsx'
+import AddPanel from '../add/AddPanel.jsx'
+import { useState } from 'react'
 
 export default function AppShell() {
-  const [addOpen, setAddOpen] = useState(false);
+  const [addOpen, setAddOpen] = useState(false)
 
   return (
     <div className="min-h-screen bg-base">
@@ -14,5 +14,5 @@ export default function AppShell() {
       </main>
       <AddPanel open={addOpen} onClose={() => setAddOpen(false)} />
     </div>
-  );
+  )
 }

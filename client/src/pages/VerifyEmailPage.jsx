@@ -1,36 +1,36 @@
-import { useEffect, useRef, useState } from 'react';
-import { Link, useSearchParams } from 'react-router-dom';
-import { toast } from 'sonner';
-import { BadgeCheck, Loader2 } from 'lucide-react';
-import { verifyEmail } from '../api/auth.js';
-import { useAuth } from '../context/AuthContext.jsx';
+import { useEffect, useRef, useState } from 'react'
+import { Link, useSearchParams } from 'react-router-dom'
+import { toast } from 'sonner'
+import { BadgeCheck, Loader2 } from 'lucide-react'
+import { verifyEmail } from '../api/auth.js'
+import { useAuth } from '../context/useAuth.js'
 
 export default function VerifyEmailPage() {
-  const [params] = useSearchParams();
-  const token = params.get('token') || '';
-  const { user, updateUser } = useAuth();
-  const userIdRef = useRef(user?.id);
-  userIdRef.current = user?.id;
-  const [state, setState] = useState('pending');
-  const [error, setError] = useState('');
+  const [params] = useSearchParams()
+  const token = params.get('token') || ''
+  const { user, updateUser } = useAuth()
+  const userIdRef = useRef(user?.id)
+  userIdRef.current = user?.id
+  const [state, setState] = useState('pending')
+  const [error, setError] = useState('')
 
   useEffect(() => {
     if (!token) {
-      setState('error');
-      setError('This verification link is incomplete — no token was found.');
-      return;
+      setState('error')
+      setError('This verification link is incomplete — no token was found.')
+      return
     }
     verifyEmail(token)
       .then(({ user: verified }) => {
-        setState('verified');
-        if (!userIdRef.current || userIdRef.current === verified.id) updateUser(verified);
-        toast.success('Email verified');
+        setState('verified')
+        if (!userIdRef.current || userIdRef.current === verified.id) updateUser(verified)
+        toast.success('Email verified')
       })
       .catch((err) => {
-        setState('error');
-        setError(err.friendlyMessage);
-      });
-  }, [token, updateUser]);
+        setState('error')
+        setError(err.friendlyMessage)
+      })
+  }, [token, updateUser])
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-base px-4">
@@ -69,5 +69,5 @@ export default function VerifyEmailPage() {
         </div>
       </div>
     </div>
-  );
+  )
 }

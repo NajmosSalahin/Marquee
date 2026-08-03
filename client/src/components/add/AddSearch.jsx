@@ -1,22 +1,23 @@
-import { useState } from 'react';
-import { useQuery } from '@tanstack/react-query';
-import { Search, PenLine } from 'lucide-react';
-import { searchTitle } from '../../api/search.js';
-import useDebounce from '../../hooks/useDebounce.js';
-import { TYPES, TYPE_LABELS } from '../../lib/constants.js';
-import Skeleton from '../ui/Skeleton.jsx';
-import Poster from '../ui/Poster.jsx';
-import SourceBadge from '../ui/SourceBadge.jsx';
-import EmptyState from '../ui/EmptyState.jsx';
+import { useState } from 'react'
+import { useQuery } from '@tanstack/react-query'
+import { Search, PenLine } from 'lucide-react'
+import { searchTitle } from '../../api/search.js'
+import useDebounce from '../../hooks/useDebounce.js'
+import { TYPES, TYPE_LABELS } from '../../lib/constants.js'
+import Skeleton from '../ui/Skeleton.jsx'
+import Poster from '../ui/Poster.jsx'
+import SourceBadge from '../ui/SourceBadge.jsx'
+import EmptyState from '../ui/EmptyState.jsx'
 
 function ResultCard({ result, onPick }) {
-  const poster = result.posters?.[0]?.url;
+  const poster = result.posters?.[0]?.url
   return (
     <button
       onClick={() => onPick(result)}
       className="group text-left"
       aria-label={`Add ${result.title} (${result.year || 'unknown year'}) from ${result.source}`}
-    >      <div className="poster-glow relative overflow-hidden rounded-lg bg-surface">
+    >
+      <div className="poster-glow relative overflow-hidden rounded-lg bg-surface">
         <Poster src={poster} alt={result.title} />
         <SourceBadge source={result.source} className="absolute left-1.5 top-1.5" />
         {result.rating != null && (
@@ -25,26 +26,28 @@ function ResultCard({ result, onPick }) {
           </span>
         )}
       </div>
-      <p className="mt-2 line-clamp-1 text-sm font-semibold text-ink group-hover:text-accent">{result.title}</p>
+      <p className="mt-2 line-clamp-1 text-sm font-semibold text-ink group-hover:text-accent">
+        {result.title}
+      </p>
       <p className="font-mono text-xs text-muted">{result.year || '—'}</p>
     </button>
-  );
+  )
 }
 
 export default function AddSearch({ onPick, onManual }) {
-  const [type, setType] = useState('movie');
-  const [q, setQ] = useState('');
-  const debouncedQ = useDebounce(q, 400);
+  const [type, setType] = useState('movie')
+  const [q, setQ] = useState('')
+  const debouncedQ = useDebounce(q, 400)
   const query = useQuery({
     queryKey: ['search', type, debouncedQ],
     queryFn: () => searchTitle(type, debouncedQ),
     enabled: debouncedQ.trim().length >= 2,
-  });
+  })
 
-  const pick = (result) => onPick(result, type);
+  const pick = (result) => onPick(result, type)
 
-  const results = query.data?.results || [];
-  const sourceErrors = query.data?.sourceErrors || [];
+  const results = query.data?.results || []
+  const sourceErrors = query.data?.sourceErrors || []
 
   return (
     <div className="space-y-4">
@@ -56,7 +59,9 @@ export default function AddSearch({ onPick, onManual }) {
             aria-selected={type === t.id}
             onClick={() => setType(t.id)}
             className={`rounded-lg px-3.5 py-1.5 text-sm font-semibold transition-colors ${
-              type === t.id ? 'bg-accent text-[#14100a]' : 'hairline bg-surface text-muted hover:text-ink'
+              type === t.id
+                ? 'bg-accent text-[#14100a]'
+                : 'hairline bg-surface text-muted hover:text-ink'
             }`}
           >
             {t.label}
@@ -65,7 +70,10 @@ export default function AddSearch({ onPick, onManual }) {
       </div>
 
       <div className="relative">
-        <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted" aria-hidden="true" />
+        <Search
+          className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted"
+          aria-hidden="true"
+        />
         <input
           className="input pl-9"
           placeholder={`Search ${TYPE_LABELS[type]}s — TMDB + OMDb${
@@ -78,9 +86,7 @@ export default function AddSearch({ onPick, onManual }) {
       </div>
 
       {sourceErrors.length > 0 && (
-        <p className="text-xs text-muted">
-          {sourceErrors.join(' · ')} — showing the other source.
-        </p>
+        <p className="text-xs text-muted">{sourceErrors.join(' · ')} — showing the other source.</p>
       )}
 
       {query.isLoading && (
@@ -140,5 +146,5 @@ export default function AddSearch({ onPick, onManual }) {
         />
       )}
     </div>
-  );
+  )
 }

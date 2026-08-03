@@ -1,31 +1,31 @@
-import { useState } from 'react';
-import { Link, useSearchParams } from 'react-router-dom';
-import { toast } from 'sonner';
-import { Loader2 } from 'lucide-react';
-import { resetPassword } from '../api/auth.js';
+import { useState } from 'react'
+import { Link, useSearchParams } from 'react-router-dom'
+import { toast } from 'sonner'
+import { Loader2 } from 'lucide-react'
+import { resetPassword } from '../api/auth.js'
 
 export default function ResetPasswordPage() {
-  const [params] = useSearchParams();
-  const token = params.get('token') || '';
-  const [password, setPassword] = useState('');
-  const [done, setDone] = useState(false);
-  const [submitting, setSubmitting] = useState(false);
-  const [error, setError] = useState('');
+  const [params] = useSearchParams()
+  const token = params.get('token') || ''
+  const [password, setPassword] = useState('')
+  const [done, setDone] = useState(false)
+  const [submitting, setSubmitting] = useState(false)
+  const [error, setError] = useState('')
 
   const submit = async (e) => {
-    e.preventDefault();
-    setSubmitting(true);
-    setError('');
+    e.preventDefault()
+    setSubmitting(true)
+    setError('')
     try {
-      await resetPassword(token, password);
-      setDone(true);
-      toast.success('Password updated');
+      await resetPassword(token, password)
+      setDone(true)
+      toast.success('Password updated')
     } catch (err) {
-      setError(err.friendlyMessage);
+      setError(err.friendlyMessage)
     } finally {
-      setSubmitting(false);
+      setSubmitting(false)
     }
-  };
+  }
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-base px-4">
@@ -38,7 +38,8 @@ export default function ResetPasswordPage() {
         <div className="rounded-2xl border border-line bg-surface p-6 shadow-card">
           {!token ? (
             <p className="text-sm text-muted">
-              This reset link is incomplete — it looks like it was opened without a token. Request a fresh one below.
+              This reset link is incomplete — it looks like it was opened without a token. Request a
+              fresh one below.
             </p>
           ) : done ? (
             <div className="space-y-3 text-center">
@@ -52,7 +53,9 @@ export default function ResetPasswordPage() {
             <form onSubmit={submit} className="space-y-4">
               <h1 className="font-display text-xl font-semibold text-ink">Choose a new password</h1>
               <div>
-                <label className="label" htmlFor="rp-password">New password</label>
+                <label className="label" htmlFor="rp-password">
+                  New password
+                </label>
                 <input
                   id="rp-password"
                   type="password"
@@ -76,5 +79,5 @@ export default function ResetPasswordPage() {
         </div>
       </div>
     </div>
-  );
+  )
 }

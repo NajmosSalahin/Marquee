@@ -7,9 +7,23 @@
     "dev": "concurrently -n server,client -c yellow,cyan \"npm run dev --prefix server\" \"npm run dev --prefix client\"",
     "server": "npm run dev --prefix server",
     "client": "npm run dev --prefix client",
-    "build": "npm run build --prefix client"
+    "build": "npm run build --prefix client",
+    "start": "cross-env NODE_ENV=production node --env-file=server/.env server/index.js",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "test": "vitest run"
   },
   "devDependencies": {
-    "concurrently": "^9.1.0"
+    "@eslint/js": "^10.0.1",
+    "concurrently": "^9.1.0",
+    "cross-env": "^7.0.3",
+    "eslint": "^10.8.0",
+    "eslint-plugin-react-hooks": "^7.1.1",
+    "eslint-plugin-react-refresh": "^0.5.3",
+    "globals": "^17.9.0",
+    "prettier": "^3.9.6",
+    "vitest": "^4.1.10"
   }
 }

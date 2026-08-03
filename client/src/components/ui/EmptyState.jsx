@@ -6,5 +6,5 @@ export default function EmptyState({ icon: Icon, title, body, action }) {
       {body && <p className="max-w-sm text-sm text-muted">{body}</p>}
       {action}
     </div>
-  );
+  )
 }

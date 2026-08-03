@@ -1,35 +1,46 @@
-import { useMemo } from 'react';
-import { RotateCcw, Search } from 'lucide-react';
-import { TYPES, SORTS } from '../../lib/constants.js';
-import { useUiStore } from '../../store/ui.js';
+import { useMemo } from 'react'
+import { RotateCcw, Search } from 'lucide-react'
+import { TYPES, SORTS } from '../../lib/constants.js'
+import { useUiStore } from '../../store/ui.js'
 
 export default function FilterBar({ items }) {
-  const { filters, setFilter, resetFilters } = useUiStore();
+  const { filters, setFilter, resetFilters } = useUiStore()
 
   const genreOptions = useMemo(() => {
-    const set = new Set();
-    for (const i of items) for (const g of i.genres || []) set.add(g);
-    return [...set].sort((a, b) => a.localeCompare(b));
-  }, [items]);
+    const set = new Set()
+    for (const i of items) for (const g of i.genres || []) set.add(g)
+    return [...set].sort((a, b) => a.localeCompare(b))
+  }, [items])
 
   const tagOptions = useMemo(() => {
-    const set = new Set();
-    for (const i of items) for (const t of i.tags || []) set.add(t);
-    return [...set].sort((a, b) => a.localeCompare(b));
-  }, [items]);
+    const set = new Set()
+    for (const i of items) for (const t of i.tags || []) set.add(t)
+    return [...set].sort((a, b) => a.localeCompare(b))
+  }, [items])
 
-  const active = filters.type !== 'all' || filters.status !== 'all' || filters.genre !== 'all' || filters.tag !== 'all' || filters.q !== '';
+  const active =
+    filters.type !== 'all' ||
+    filters.status !== 'all' ||
+    filters.genre !== 'all' ||
+    filters.tag !== 'all' ||
+    filters.q !== ''
 
   return (
     <div className="sticky top-16 z-30 -mx-4 border-b border-line bg-base/85 px-4 py-3 backdrop-blur-md sm:-mx-6 sm:px-6">
       <div className="flex flex-wrap items-center gap-2.5">
-        <div className="flex overflow-hidden rounded-lg hairline" role="group" aria-label="Filter by type">
+        <div
+          className="flex overflow-hidden rounded-lg hairline"
+          role="group"
+          aria-label="Filter by type"
+        >
           {[{ id: 'all', label: 'All' }, ...TYPES].map((t) => (
             <button
               key={t.id}
               onClick={() => setFilter('type', t.id)}
               className={`px-3 py-1.5 text-xs font-semibold transition-colors ${
-                filters.type === t.id ? 'bg-accent text-[#14100a]' : 'text-muted hover:bg-surface2 hover:text-ink'
+                filters.type === t.id
+                  ? 'bg-accent text-[#14100a]'
+                  : 'text-muted hover:bg-surface2 hover:text-ink'
               }`}
             >
               {t.label}
@@ -93,7 +104,10 @@ export default function FilterBar({ items }) {
         </select>
 
         <div className="relative min-w-40 flex-1 sm:max-w-56">
-          <Search className="pointer-events-none absolute left-2.5 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-muted" aria-hidden="true" />
+          <Search
+            className="pointer-events-none absolute left-2.5 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-muted"
+            aria-hidden="true"
+          />
           <input
             aria-label="Search your watchlist"
             className="input py-1.5 pl-8 text-xs"
@@ -104,11 +118,15 @@ export default function FilterBar({ items }) {
         </div>
 
         {active && (
-          <button onClick={resetFilters} className="btn btn-quiet px-2.5 py-1.5 text-xs" title="Clear filters">
+          <button
+            onClick={resetFilters}
+            className="btn btn-quiet px-2.5 py-1.5 text-xs"
+            title="Clear filters"
+          >
             <RotateCcw className="h-3.5 w-3.5" aria-hidden="true" /> Clear
           </button>
         )}
       </div>
     </div>
-  );
+  )
 }

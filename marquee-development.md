@@ -20,18 +20,19 @@ Route every external API call through the Express server — never call TMDB, OM
 
 Each type queries **two** sources in parallel and merges the results — so a title missing from one source still turns up, ratings and posters can be compared side by side, and one flaky API is never a dead end.
 
-| Source | Covers | Key needed | Notes |
-|---|---|---|---|
-| [TMDB](https://www.themoviedb.org/settings/api) | Movies & TV — primary | Free — register a Developer key at Settings → API | Free for non-commercial use with attribution. Use `/search/movie`, `/search/tv`; posters come from `image.tmdb.org/t/p/w500{poster_path}`. Don't stop at the single default poster — `/movie/{id}/images` and `/tv/{id}/images` return the *whole* set of community-uploaded posters (different crops, languages, fan uploads) sorted by vote, which is usually where the sharper option is hiding. |
-| [OMDb](https://www.omdbapi.com/apikey.aspx) | Movies & TV — secondary (fallback + rating/poster compare) | Free — request by email, key arrives within the hour | 1,000 requests/day on the free tier (a small Patreon donation raises it — not needed here). Backed by IMDb; one lookup returns IMDb, Rotten Tomatoes, *and* Metacritic scores plus its own poster, so it doubles as a fallback when TMDB has no match and a second opinion on rating/poster. |
-| [Jikan v4](https://docs.api.jikan.moe/) | Anime — primary | None — fully open | `https://api.jikan.moe/v4/anime?q=...`. Rate limit ≈ 3 req/sec, 60/min — debounce search input (~400ms) and cache results server-side. |
-| [AniList](https://docs.anilist.co/) | Anime — secondary (fallback + higher-res covers) | None — GraphQL, no auth for public queries | Single endpoint: `https://graphql.anilist.co` (POST). Rate limit 90 req/min. `coverImage` returns `extraLarge / large / medium` variants — often crisper than MAL's own art — and it's a second net for anime Jikan comes up empty on. |
+| Source                                          | Covers                                                     | Key needed                                           | Notes                                                                                                                                                                                                                                                                                                                                                                                               |
+| ----------------------------------------------- | ---------------------------------------------------------- | ---------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| [TMDB](https://www.themoviedb.org/settings/api) | Movies & TV — primary                                      | Free — register a Developer key at Settings → API    | Free for non-commercial use with attribution. Use `/search/movie`, `/search/tv`; posters come from `image.tmdb.org/t/p/w500{poster_path}`. Don't stop at the single default poster — `/movie/{id}/images` and `/tv/{id}/images` return the _whole_ set of community-uploaded posters (different crops, languages, fan uploads) sorted by vote, which is usually where the sharper option is hiding. |
+| [OMDb](https://www.omdbapi.com/apikey.aspx)     | Movies & TV — secondary (fallback + rating/poster compare) | Free — request by email, key arrives within the hour | 1,000 requests/day on the free tier (a small Patreon donation raises it — not needed here). Backed by IMDb; one lookup returns IMDb, Rotten Tomatoes, _and_ Metacritic scores plus its own poster, so it doubles as a fallback when TMDB has no match and a second opinion on rating/poster.                                                                                                        |
+| [Jikan v4](https://docs.api.jikan.moe/)         | Anime — primary                                            | None — fully open                                    | `https://api.jikan.moe/v4/anime?q=...`. Rate limit ≈ 3 req/sec, 60/min — debounce search input (~400ms) and cache results server-side.                                                                                                                                                                                                                                                              |
+| [AniList](https://docs.anilist.co/)             | Anime — secondary (fallback + higher-res covers)           | None — GraphQL, no auth for public queries           | Single endpoint: `https://graphql.anilist.co` (POST). Rate limit 90 req/min. `coverImage` returns `extraLarge / large / medium` variants — often crisper than MAL's own art — and it's a second net for anime Jikan comes up empty on.                                                                                                                                                              |
 
 **Search & merge logic:** the backend fires both sources for a given `type` in parallel and normalizes each into one shape (title, year, poster options, overview, genres, rating + its source, external id) — see §5 for how these surface as choices in the UI. If one source errors or times out, still return whatever the other found; if both come back empty, let the client fall through to "Add manually."
 
 ## 3. Data models (Mongoose)
 
 **User**
+
 ```js
 {
   username: { type: String, required: true, unique: true, trim: true },
@@ -47,6 +48,7 @@ Each type queries **two** sources in parallel and merges the results — so a ti
 ```
 
 **WatchlistItem**
+
 ```js
 {
   userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true, index: true },
@@ -82,9 +84,10 @@ Each type queries **two** sources in parallel and merges the results — so a ti
 **Search & add** — pick a type (Movie / TV / Anime), debounced search hits both sources for that type in parallel (TMDB + OMDb for Movie/TV, Jikan + AniList for Anime). Results render as a poster-thumbnail grid with a small source badge per card — a title found on both sources shows as two cards side by side, so there's a real choice rather than a silent merge. Clicking a card opens a pre-filled add form using that source's data (title, year, overview, genres — all still hand-editable). Poster and rating each get their own compact picker inside the form, showing every option found across sources for that title (TMDB's `/images` endpoint alone usually surfaces several posters) — so the poster and the rating can be swapped independently of which source's card was clicked. "Add manually" skips search entirely. Neither source has anything for a query → the empty state points straight at "Add manually," never a dead end. Warn (don't hard-block) on duplicate adds of the same title.
 
 **Three views, one dataset**
-- *Board* (default) — columns per status, drag cards between columns and reorder within one, via dnd-kit.
-- *Grid* — poster wall, Letterboxd/streaming-service style.
-- *List* — compact sortable table.
+
+- _Board_ (default) — columns per status, drag cards between columns and reorder within one, via dnd-kit.
+- _Grid_ — poster wall, Letterboxd/streaming-service style.
+- _List_ — compact sortable table.
 
 View choice is saved to `preferences.defaultView`.
 
@@ -93,6 +96,7 @@ View choice is saved to `preferences.defaultView`.
 **Filter & sort** — by type, status, genre, tag; sort by date added, release year, rating, alphabetical; a separate client-side search-within-list.
 
 **Customization** (this is a headline feature, not an afterthought)
+
 - Accent color picker — five curated options (see §6), changes buttons/focus rings/hover glow app-wide.
 - Density toggle (comfortable/compact) and default view mode.
 - Free-text personal tags on any item, autocompleted from the user's own past tags.
@@ -106,14 +110,14 @@ Skip the two defaults this brief could easily fall into: near-black-with-acid-ne
 
 **Palette**
 
-| Role | Value |
-|---|---|
-| Background | `#0C0C0F` |
-| Surface (cards/panels) | `#17171B` |
-| Hairline border | `#27272C` (use this instead of drop shadows — they barely read on dark) |
-| Text primary | `#EDEDEF` |
-| Text muted | `#8B8B93` |
-| **Accent — Marquee Amber** (default) | `#E3A857` |
+| Role                                 | Value                                                                   |
+| ------------------------------------ | ----------------------------------------------------------------------- |
+| Background                           | `#0C0C0F`                                                               |
+| Surface (cards/panels)               | `#17171B`                                                               |
+| Hairline border                      | `#27272C` (use this instead of drop shadows — they barely read on dark) |
+| Text primary                         | `#EDEDEF`                                                               |
+| Text muted                           | `#8B8B93`                                                               |
+| **Accent — Marquee Amber** (default) | `#E3A857`                                                               |
 
 Accent picker options (same dark-jewel-tone logic, not saturated neon): **Velvet Crimson** `#B23A48` · **Dusk Violet** `#8B6FD8` · **Reel Emerald** `#3FA37B` · **Screening Azure** `#4C7EDB`.
 
@@ -124,6 +128,7 @@ Accent picker options (same dark-jewel-tone logic, not saturated neon): **Velvet
 **Signature moment** — posters lit like a marquee: on hover/focus a poster card gets a soft accent-colored edge glow and lifts slightly, as if a bulb switched on behind it. This is the one place glow appears; keep everything else quiet so it reads as a signature, not decoration.
 
 **Board layout, roughly:**
+
 ```
 ┌─ Plan to Watch ──┐ ┌─ Watching ────────┐ ┌─ Completed ────────┐
 │ ▢ poster + title │ │ ▢ poster + title  │ │ ▢ poster + title   │

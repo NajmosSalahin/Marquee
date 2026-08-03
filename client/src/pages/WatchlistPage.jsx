@@ -1,51 +1,51 @@
-import { useMemo, useState } from 'react';
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { toast } from 'sonner';
-import { Columns3, LayoutGrid, List, Plus, Search as SearchIcon } from 'lucide-react';
-import { useAuth } from '../context/AuthContext.jsx';
-import { useUiStore } from '../store/ui.js';
-import { fetchItems } from '../api/items.js';
-import { updatePreferences } from '../api/users.js';
-import FilterBar from '../components/watchlist/FilterBar.jsx';
-import BoardView from '../components/watchlist/BoardView.jsx';
-import GridView from '../components/watchlist/GridView.jsx';
-import ListView from '../components/watchlist/ListView.jsx';
-import ItemDrawer from '../components/watchlist/ItemDrawer.jsx';
-import EmptyState from '../components/ui/EmptyState.jsx';
-import Skeleton from '../components/ui/Skeleton.jsx';
-import { STATUSES } from '../lib/constants.js';
+import { useMemo, useState } from 'react'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import { toast } from 'sonner'
+import { Columns3, LayoutGrid, List, Plus, Search as SearchIcon } from 'lucide-react'
+import { useAuth } from '../context/useAuth.js'
+import { useUiStore } from '../store/ui.js'
+import { fetchItems } from '../api/items.js'
+import { updatePreferences } from '../api/users.js'
+import FilterBar from '../components/watchlist/FilterBar.jsx'
+import BoardView from '../components/watchlist/BoardView.jsx'
+import GridView from '../components/watchlist/GridView.jsx'
+import ListView from '../components/watchlist/ListView.jsx'
+import ItemDrawer from '../components/watchlist/ItemDrawer.jsx'
+import EmptyState from '../components/ui/EmptyState.jsx'
+import Skeleton from '../components/ui/Skeleton.jsx'
+import { STATUSES } from '../lib/constants.js'
 
 const VIEWS = [
   { id: 'board', label: 'Board', icon: Columns3 },
   { id: 'grid', label: 'Grid', icon: LayoutGrid },
   { id: 'list', label: 'List', icon: List },
-];
+]
 
 export default function WatchlistPage() {
-  const { user, updateUser } = useAuth();
-  const { view, setView, filters, setFilter } = useUiStore();
-  const [selected, setSelected] = useState(null);
-  const queryClient = useQueryClient();
+  const { user, updateUser } = useAuth()
+  const { view, setView, filters, setFilter } = useUiStore()
+  const [selected, setSelected] = useState(null)
+  const queryClient = useQueryClient()
 
-  const itemsQuery = useQuery({ queryKey: ['items'], queryFn: fetchItems });
-  const items = itemsQuery.data || [];
-  const activeView = view || user?.preferences?.defaultView || 'board';
+  const itemsQuery = useQuery({ queryKey: ['items'], queryFn: fetchItems })
+  const items = useMemo(() => itemsQuery.data || [], [itemsQuery.data])
+  const activeView = view || user?.preferences?.defaultView || 'board'
 
   const prefsMutation = useMutation({
     mutationFn: updatePreferences,
     onSuccess: (u) => updateUser(u),
     onError: (err) => toast.error(err.friendlyMessage),
-  });
+  })
 
   const switchView = (v) => {
-    setView(v);
+    setView(v)
     if (v !== user?.preferences?.defaultView) {
-      prefsMutation.mutate({ defaultView: v });
+      prefsMutation.mutate({ defaultView: v })
     }
-  };
+  }
 
   const filtered = useMemo(() => {
-    const q = filters.q.trim().toLowerCase();
+    const q = filters.q.trim().toLowerCase()
     let out = items.filter(
       (i) =>
         (filters.type === 'all' || i.type === filters.type) &&
@@ -53,31 +53,33 @@ export default function WatchlistPage() {
         (filters.genre === 'all' || (i.genres || []).includes(filters.genre)) &&
         (filters.tag === 'all' || (i.tags || []).includes(filters.tag)) &&
         (!q || i.title.toLowerCase().includes(q))
-    );
-    const sort = filters.sort;
+    )
+    const sort = filters.sort
     out = [...out].sort((a, b) => {
-      if (sort === 'title') return a.title.localeCompare(b.title);
-      if (sort === 'releaseYear') return (b.releaseYear || 0) - (a.releaseYear || 0);
-      if (sort === 'rating') return (b.externalRating ?? -1) - (a.externalRating ?? -1);
-      return new Date(b.dateAdded) - new Date(a.dateAdded);
-    });
-    return out;
-  }, [items, filters]);
+      if (sort === 'title') return a.title.localeCompare(b.title)
+      if (sort === 'releaseYear') return (b.releaseYear || 0) - (a.releaseYear || 0)
+      if (sort === 'rating') return (b.externalRating ?? -1) - (a.externalRating ?? -1)
+      return new Date(b.dateAdded) - new Date(a.dateAdded)
+    })
+    return out
+  }, [items, filters])
 
   const itemsByStatus = useMemo(() => {
-    const map = {};
-    for (const s of STATUSES) map[s.id] = [];
+    const map = {}
+    for (const s of STATUSES) map[s.id] = []
     for (const i of filtered) {
-      const arr = map[i.status] || (map[i.status] = []);
-      arr.push(i);
+      const arr = map[i.status] || (map[i.status] = [])
+      arr.push(i)
     }
     for (const s of STATUSES) {
-      map[s.id].sort((a, b) => (a.order ?? 0) - (b.order ?? 0) || new Date(a.dateAdded) - new Date(b.dateAdded));
+      map[s.id].sort(
+        (a, b) => (a.order ?? 0) - (b.order ?? 0) || new Date(a.dateAdded) - new Date(b.dateAdded)
+      )
     }
-    return map;
-  }, [filtered]);
+    return map
+  }, [filtered])
 
-  const density = user?.preferences?.density || 'comfortable';
+  const density = user?.preferences?.density || 'comfortable'
 
   return (
     <div className="space-y-6">
@@ -88,14 +90,20 @@ export default function WatchlistPage() {
             {items.length} {items.length === 1 ? 'title' : 'titles'}
           </p>
         </div>
-        <div className="flex overflow-hidden rounded-lg hairline" role="group" aria-label="View mode">
+        <div
+          className="flex overflow-hidden rounded-lg hairline"
+          role="group"
+          aria-label="View mode"
+        >
           {VIEWS.map(({ id, label, icon: Icon }) => (
             <button
               key={id}
               onClick={() => switchView(id)}
               aria-pressed={activeView === id}
               className={`flex items-center gap-1.5 px-3.5 py-2 text-sm font-semibold transition-colors ${
-                activeView === id ? 'bg-accent text-[#14100a]' : 'text-muted hover:bg-surface2 hover:text-ink'
+                activeView === id
+                  ? 'bg-accent text-[#14100a]'
+                  : 'text-muted hover:bg-surface2 hover:text-ink'
               }`}
             >
               <Icon className="h-4 w-4" aria-hidden="true" />
@@ -128,23 +136,35 @@ export default function WatchlistPage() {
           title="Couldn't load your watchlist"
           body={itemsQuery.error?.friendlyMessage}
           action={
-            <button onClick={() => queryClient.invalidateQueries({ queryKey: ['items'] })} className="btn btn-ghost">
+            <button
+              onClick={() => queryClient.invalidateQueries({ queryKey: ['items'] })}
+              className="btn btn-ghost"
+            >
               Try again
             </button>
           }
         />
       ) : items.length === 0 ? (
-        <EmptyState
-          icon={Plus}
-          title="Nothing here yet"
-          body="Add a title to get started."
-        />
+        <EmptyState icon={Plus} title="Nothing here yet" body="Add a title to get started." />
       ) : filtered.length === 0 ? (
-        <EmptyState icon={SearchIcon} title="No titles match those filters" body="Loosen a filter or clear them." />
+        <EmptyState
+          icon={SearchIcon}
+          title="No titles match those filters"
+          body="Loosen a filter or clear them."
+        />
       ) : (
         <>
-          {activeView === 'board' && <BoardView itemsByStatus={itemsByStatus} onItemClick={setSelected} />}
-          {activeView === 'grid' && <GridView items={filtered} onItemClick={setSelected} density={density} loading={false} />}
+          {activeView === 'board' && (
+            <BoardView itemsByStatus={itemsByStatus} onItemClick={setSelected} />
+          )}
+          {activeView === 'grid' && (
+            <GridView
+              items={filtered}
+              onItemClick={setSelected}
+              density={density}
+              loading={false}
+            />
+          )}
           {activeView === 'list' && (
             <ListView
               items={filtered}
@@ -158,5 +178,5 @@ export default function WatchlistPage() {
 
       <ItemDrawer item={selected} onClose={() => setSelected(null)} />
     </div>
-  );
+  )
 }

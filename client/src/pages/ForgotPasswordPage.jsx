@@ -1,27 +1,27 @@
-import { useState } from 'react';
-import { Link } from 'react-router-dom';
-import { Loader2, MailCheck } from 'lucide-react';
-import { forgotPassword } from '../api/auth.js';
+import { useState } from 'react'
+import { Link } from 'react-router-dom'
+import { Loader2, MailCheck } from 'lucide-react'
+import { forgotPassword } from '../api/auth.js'
 
 export default function ForgotPasswordPage() {
-  const [email, setEmail] = useState('');
-  const [sent, setSent] = useState(false);
-  const [submitting, setSubmitting] = useState(false);
-  const [error, setError] = useState('');
+  const [email, setEmail] = useState('')
+  const [sent, setSent] = useState(false)
+  const [submitting, setSubmitting] = useState(false)
+  const [error, setError] = useState('')
 
   const submit = async (e) => {
-    e.preventDefault();
-    setSubmitting(true);
-    setError('');
+    e.preventDefault()
+    setSubmitting(true)
+    setError('')
     try {
-      await forgotPassword(email);
-      setSent(true);
+      await forgotPassword(email)
+      setSent(true)
     } catch (err) {
-      setError(err.friendlyMessage);
+      setError(err.friendlyMessage)
     } finally {
-      setSubmitting(false);
+      setSubmitting(false)
     }
-  };
+  }
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-base px-4">
@@ -37,7 +37,8 @@ export default function ForgotPasswordPage() {
               <MailCheck className="mx-auto h-8 w-8 text-accent" aria-hidden="true" />
               <p className="font-semibold text-ink">Check your inbox</p>
               <p className="text-sm text-muted">
-                If an account exists for that email, a reset link is on its way. It expires in one hour.
+                If an account exists for that email, a reset link is on its way. It expires in one
+                hour.
               </p>
               <Link to="/login" className="btn btn-accent mt-2 w-full">
                 Back to sign in
@@ -46,11 +47,11 @@ export default function ForgotPasswordPage() {
           ) : (
             <form onSubmit={submit} className="space-y-4">
               <h1 className="font-display text-xl font-semibold text-ink">Forgot your password?</h1>
-              <p className="text-sm text-muted">
-                Enter your email and we'll send a reset link.
-              </p>
+              <p className="text-sm text-muted">Enter your email and we'll send a reset link.</p>
               <div>
-                <label className="label" htmlFor="fp-email">Email</label>
+                <label className="label" htmlFor="fp-email">
+                  Email
+                </label>
                 <input
                   id="fp-email"
                   type="email"
@@ -77,5 +78,5 @@ export default function ForgotPasswordPage() {
         </div>
       </div>
     </div>
-  );
+  )
 }

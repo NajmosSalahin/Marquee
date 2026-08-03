@@ -8,12 +8,12 @@ Built with React 18 + Vite + Tailwind + TanStack Query on the client, Node/Expre
 
 ### 1. Get the free API keys
 
-| Service | Needed for | How to get one |
-|---|---|---|
-| TMDB | Movies & TV search, posters | Register at [themoviedb.org](https://www.themoviedb.org/settings/api) → "Developer" → request an API key (free, instant). Take both the API key and the "API Read Access Token" from your settings. |
-| OMDb | Movies & TV second source, IMDb/RT/Metacritic ratings | [omdbapi.com/apikey.aspx](https://www.omdbapi.com/apikey.aspx) — request by email, key arrives within the hour. Free tier: 1,000 requests/day. |
-| Jikan + AniList | Anime (both sources) | None — fully open, no keys. |
-| Brevo (optional) | Password reset + email verification | Free account at [brevo.com](https://www.brevo.com) → SMTP & API → API keys. Verify a sender email (Settings → Senders) and use that for `BREVO_FROM_EMAIL`. |
+| Service          | Needed for                                            | How to get one                                                                                                                                                                                      |
+| ---------------- | ----------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| TMDB             | Movies & TV search, posters                           | Register at [themoviedb.org](https://www.themoviedb.org/settings/api) → "Developer" → request an API key (free, instant). Take both the API key and the "API Read Access Token" from your settings. |
+| OMDb             | Movies & TV second source, IMDb/RT/Metacritic ratings | [omdbapi.com/apikey.aspx](https://www.omdbapi.com/apikey.aspx) — request by email, key arrives within the hour. Free tier: 1,000 requests/day.                                                      |
+| Jikan + AniList  | Anime (both sources)                                  | None — fully open, no keys.                                                                                                                                                                         |
+| Brevo (optional) | Password reset + email verification                   | Free account at [brevo.com](https://www.brevo.com) → SMTP & API → API keys. Verify a sender email (Settings → Senders) and use that for `BREVO_FROM_EMAIL`.                                         |
 
 ### 2. MongoDB
 
@@ -62,11 +62,26 @@ Open http://localhost:5173, register an account, and add your first title.
 
 ## Scripts
 
-| Command | What it does |
-|---|---|
-| `npm run dev` | Server + client together (concurrently) |
-| `npm run server` / `npm run client` | Either one alone |
-| `npm run build` | Production build of the client |
+| Command                             | What it does                                                                                                             |
+| ----------------------------------- | ------------------------------------------------------------------------------------------------------------------------ |
+| `npm run dev`                       | Server + client together (concurrently)                                                                                  |
+| `npm run server` / `npm run client` | Either one alone                                                                                                         |
+| `npm run build`                     | Production build of the client                                                                                           |
+| `npm start`                         | Production server: builds nothing — run `npm run build` first, then this serves the built client from Express on `:5000` |
+
+## Deploy
+
+```bash
+npm run build          # client/dist
+npm start              # NODE_ENV=production — Express serves client/dist + the API on :5000
+```
+
+Open `http://localhost:5000`. Notes:
+
+- The whole app runs from one origin in production, so the built client and all `/api` calls share the server (the Vite dev proxy is not involved).
+- Set `NODE_ENV=production` and `CLIENT_URL=https://your-domain` in `server/.env`. Session cookies are marked `secure` in production, so serve over HTTPS (a reverse proxy like Caddy/Nginx or any PaaS works).
+- Poster images load over https — the server's CSP is configured to allow them (see `server/index.js`).
+- For a dev-only preview of the production client, keep the API server running (`npm run server`) and use `npm run build --prefix client && npm run preview --prefix client` (Vite preview proxies `/api` to `:5000`).
 
 ## Notes
 

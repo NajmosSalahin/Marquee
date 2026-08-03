@@ -1,4 +1,4 @@
-const ENDPOINT = 'https://graphql.anilist.co';
+const ENDPOINT = 'https://graphql.anilist.co'
 
 const QUERY = `
 query ($search: String) {
@@ -13,13 +13,13 @@ query ($search: String) {
       startDate { year }
     }
   }
-}`;
+}`
 
 function stripMarkup(text) {
   return (text || '')
     .replace(/<[^>]*>/g, ' ')
     .replace(/\s+/g, ' ')
-    .trim();
+    .trim()
 }
 
 export async function searchAnilist(query) {
@@ -27,11 +27,11 @@ export async function searchAnilist(query) {
     method: 'POST',
     headers: { 'Content-Type': 'application/json', accept: 'application/json' },
     body: JSON.stringify({ query: QUERY, variables: { search: query } }),
-  });
-  if (!res.ok) throw new Error(`AniList responded ${res.status}`);
-  const data = await res.json();
+  })
+  if (!res.ok) throw new Error(`AniList responded ${res.status}`)
+  const data = await res.json()
 
-  const media = data?.data?.Page?.media || [];
+  const media = data?.data?.Page?.media || []
   return media.map((m) => ({
     source: 'anilist',
     externalId: String(m.id),
@@ -43,5 +43,5 @@ export async function searchAnilist(query) {
     posters: [m.coverImage?.extraLarge, m.coverImage?.large, m.coverImage?.medium]
       .filter(Boolean)
       .map((url) => ({ url, lang: null, votes: 0 })),
-  }));
+  }))
 }

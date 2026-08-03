@@ -1,11 +1,11 @@
-import { useMutation } from '@tanstack/react-query';
-import { toast } from 'sonner';
-import { BadgeCheck, MailWarning } from 'lucide-react';
-import { useAuth } from '../context/AuthContext.jsx';
-import { updatePreferences } from '../api/users.js';
-import { resendVerification } from '../api/auth.js';
-import { ACCENTS, STATUSES, TYPES } from '../lib/constants.js';
-import { formatDate } from '../lib/format.js';
+import { useMutation } from '@tanstack/react-query'
+import { toast } from 'sonner'
+import { BadgeCheck, MailWarning } from 'lucide-react'
+import { useAuth } from '../context/useAuth.js'
+import { updatePreferences } from '../api/users.js'
+import { resendVerification } from '../api/auth.js'
+import { ACCENTS, STATUSES, TYPES } from '../lib/constants.js'
+import { formatDate } from '../lib/format.js'
 
 function SettingCard({ title, body, children }) {
   return (
@@ -14,29 +14,33 @@ function SettingCard({ title, body, children }) {
       {body && <p className="mt-1 text-sm text-muted">{body}</p>}
       <div className="mt-4">{children}</div>
     </section>
-  );
+  )
 }
 
 export default function SettingsPage() {
-  const { user, updateUser } = useAuth();
-  const prefs = user?.preferences || { accentColor: 'amber', defaultView: 'board', density: 'comfortable' };
+  const { user, updateUser } = useAuth()
+  const prefs = user?.preferences || {
+    accentColor: 'amber',
+    defaultView: 'board',
+    density: 'comfortable',
+  }
 
   const mutation = useMutation({
     mutationFn: updatePreferences,
     onSuccess: (u) => {
-      updateUser(u);
-      toast.success('Preferences saved');
+      updateUser(u)
+      toast.success('Preferences saved')
     },
     onError: (err) => toast.error(err.friendlyMessage),
-  });
+  })
 
-  const set = (key, value) => mutation.mutate({ [key]: value });
+  const set = (key, value) => mutation.mutate({ [key]: value })
 
   const resend = useMutation({
     mutationFn: resendVerification,
     onSuccess: (data) => toast.success(data.message || 'Verification email sent'),
     onError: (err) => toast.error(err.friendlyMessage),
-  });
+  })
 
   return (
     <div className="max-w-2xl space-y-6">
@@ -59,11 +63,15 @@ export default function SettingsPage() {
             >
               <span
                 className={`h-9 w-9 rounded-full transition-all ${
-                  prefs.accentColor === a.id ? 'ring-2 ring-ink ring-offset-2 ring-offset-surface scale-105' : 'group-hover:scale-105'
+                  prefs.accentColor === a.id
+                    ? 'ring-2 ring-ink ring-offset-2 ring-offset-surface scale-105'
+                    : 'group-hover:scale-105'
                 }`}
                 style={{ background: a.color }}
               />
-              <span className={`text-[11px] font-medium ${prefs.accentColor === a.id ? 'text-ink' : 'text-muted'}`}>
+              <span
+                className={`text-[11px] font-medium ${prefs.accentColor === a.id ? 'text-ink' : 'text-muted'}`}
+              >
                 {a.label}
               </span>
             </button>
@@ -72,7 +80,11 @@ export default function SettingsPage() {
       </SettingCard>
 
       <SettingCard title="Density" body="How tightly the poster wall packs.">
-        <div className="inline-flex overflow-hidden rounded-lg hairline" role="group" aria-label="Density">
+        <div
+          className="inline-flex overflow-hidden rounded-lg hairline"
+          role="group"
+          aria-label="Density"
+        >
           {[
             { id: 'comfortable', label: 'Comfortable' },
             { id: 'compact', label: 'Compact' },
@@ -82,7 +94,9 @@ export default function SettingsPage() {
               onClick={() => set('density', d.id)}
               aria-pressed={prefs.density === d.id}
               className={`px-4 py-2 text-sm font-semibold transition-colors ${
-                prefs.density === d.id ? 'bg-accent text-[#14100a]' : 'text-muted hover:bg-surface2 hover:text-ink'
+                prefs.density === d.id
+                  ? 'bg-accent text-[#14100a]'
+                  : 'text-muted hover:bg-surface2 hover:text-ink'
               }`}
             >
               {d.label}
@@ -92,7 +106,11 @@ export default function SettingsPage() {
       </SettingCard>
 
       <SettingCard title="Default view" body="Where the watchlist opens each time.">
-        <div className="inline-flex overflow-hidden rounded-lg hairline" role="group" aria-label="Default view">
+        <div
+          className="inline-flex overflow-hidden rounded-lg hairline"
+          role="group"
+          aria-label="Default view"
+        >
           {[
             { id: 'board', label: 'Board' },
             { id: 'grid', label: 'Grid' },
@@ -103,7 +121,9 @@ export default function SettingsPage() {
               onClick={() => set('defaultView', v.id)}
               aria-pressed={prefs.defaultView === v.id}
               className={`px-4 py-2 text-sm font-semibold transition-colors ${
-                prefs.defaultView === v.id ? 'bg-accent text-[#14100a]' : 'text-muted hover:bg-surface2 hover:text-ink'
+                prefs.defaultView === v.id
+                  ? 'bg-accent text-[#14100a]'
+                  : 'text-muted hover:bg-surface2 hover:text-ink'
               }`}
             >
               {v.label}
@@ -152,8 +172,9 @@ export default function SettingsPage() {
       </SettingCard>
 
       <p className="text-xs text-muted">
-        Statuses: {STATUSES.map((s) => s.label).join(' · ')} — Types: {TYPES.map((t) => t.label).join(' · ')}
+        Statuses: {STATUSES.map((s) => s.label).join(' · ')} — Types:{' '}
+        {TYPES.map((t) => t.label).join(' · ')}
       </p>
     </div>
-  );
+  )
 }

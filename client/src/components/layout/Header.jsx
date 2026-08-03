@@ -1,16 +1,16 @@
-import { Link, NavLink, useNavigate } from 'react-router-dom';
-import { Clapperboard, LayoutDashboard, ListVideo, LogOut, Plus, Settings } from 'lucide-react';
-import { useAuth } from '../../context/AuthContext.jsx';
+import { Link, NavLink, useNavigate } from 'react-router-dom'
+import { Clapperboard, LayoutDashboard, ListVideo, LogOut, Plus, Settings } from 'lucide-react'
+import { useAuth } from '../../context/useAuth.js'
 
 const NAV = [
   { to: '/', label: 'Dashboard', icon: LayoutDashboard, end: true },
   { to: '/watchlist', label: 'Watchlist', icon: ListVideo, end: false },
   { to: '/settings', label: 'Settings', icon: Settings, end: false },
-];
+]
 
 export default function Header({ onAdd }) {
-  const { user, logout } = useAuth();
-  const navigate = useNavigate();
+  const { user, logout } = useAuth()
+  const navigate = useNavigate()
 
   return (
     <header className="sticky top-0 z-40 border-b border-line bg-base/85 backdrop-blur-md">
@@ -41,11 +41,7 @@ export default function Header({ onAdd }) {
         </nav>
 
         <div className="ml-auto flex items-center gap-3">
-          <button
-            onClick={onAdd}
-            className="btn btn-accent"
-            aria-label="Add to watchlist"
-          >
+          <button onClick={onAdd} className="btn btn-accent" aria-label="Add to watchlist">
             <Plus className="h-4 w-4" aria-hidden="true" />
             <span className="hidden sm:inline">Add</span>
           </button>
@@ -57,8 +53,8 @@ export default function Header({ onAdd }) {
           </div>
           <button
             onClick={async () => {
-              await logout();
-              navigate('/login');
+              await logout()
+              navigate('/login')
             }}
             className="btn btn-quiet p-2"
             aria-label="Sign out"
@@ -69,5 +65,5 @@ export default function Header({ onAdd }) {
         </div>
       </div>
     </header>
-  );
+  )
 }

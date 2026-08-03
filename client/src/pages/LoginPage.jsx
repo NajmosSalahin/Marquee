@@ -1,26 +1,26 @@
-import { useState } from 'react';
-import { Link } from 'react-router-dom';
-import { toast } from 'sonner';
-import { Loader2 } from 'lucide-react';
-import { useAuth } from '../context/AuthContext.jsx';
+import { useState } from 'react'
+import { Link } from 'react-router-dom'
+import { toast } from 'sonner'
+import { Loader2 } from 'lucide-react'
+import { useAuth } from '../context/useAuth.js'
 
 export default function LoginPage() {
-  const { login } = useAuth();
-  const [identifier, setIdentifier] = useState('');
-  const [password, setPassword] = useState('');
-  const [submitting, setSubmitting] = useState(false);
+  const { login } = useAuth()
+  const [identifier, setIdentifier] = useState('')
+  const [password, setPassword] = useState('')
+  const [submitting, setSubmitting] = useState(false)
 
   const submit = async (e) => {
-    e.preventDefault();
-    setSubmitting(true);
+    e.preventDefault()
+    setSubmitting(true)
     try {
-      await login(identifier, password);
+      await login(identifier, password)
     } catch (err) {
-      toast.error(err.friendlyMessage);
+      toast.error(err.friendlyMessage)
     } finally {
-      setSubmitting(false);
+      setSubmitting(false)
     }
-  };
+  }
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-base px-4">
@@ -30,9 +30,14 @@ export default function LoginPage() {
             Marquee<span className="text-accent">.</span>
           </span>
         </Link>
-        <form onSubmit={submit} className="space-y-4 rounded-2xl border border-line bg-surface p-6 shadow-card">
+        <form
+          onSubmit={submit}
+          className="space-y-4 rounded-2xl border border-line bg-surface p-6 shadow-card"
+        >
           <div>
-            <label className="label" htmlFor="identifier">Email or username</label>
+            <label className="label" htmlFor="identifier">
+              Email or username
+            </label>
             <input
               id="identifier"
               className="input"
@@ -44,7 +49,9 @@ export default function LoginPage() {
             />
           </div>
           <div>
-            <label className="label" htmlFor="password">Password</label>
+            <label className="label" htmlFor="password">
+              Password
+            </label>
             <input
               id="password"
               type="password"
@@ -73,5 +80,5 @@ export default function LoginPage() {
         </form>
       </div>
     </div>
-  );
+  )
 }

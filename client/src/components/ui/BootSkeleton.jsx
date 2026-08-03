@@ -1,4 +1,4 @@
-import Skeleton from './Skeleton.jsx';
+import Skeleton from './Skeleton.jsx'
 
 export default function BootSkeleton() {
   return (
@@ -10,5 +10,5 @@ export default function BootSkeleton() {
         <Skeleton className="h-10 w-28 rounded-lg" />
       </div>
     </div>
-  );
+  )
 }

@@ -1,28 +1,28 @@
-import { Routes, Route, Navigate } from 'react-router-dom';
-import { useAuth } from './context/AuthContext.jsx';
-import LoginPage from './pages/LoginPage.jsx';
-import RegisterPage from './pages/RegisterPage.jsx';
-import ForgotPasswordPage from './pages/ForgotPasswordPage.jsx';
-import ResetPasswordPage from './pages/ResetPasswordPage.jsx';
-import VerifyEmailPage from './pages/VerifyEmailPage.jsx';
-import DashboardPage from './pages/DashboardPage.jsx';
-import WatchlistPage from './pages/WatchlistPage.jsx';
-import SettingsPage from './pages/SettingsPage.jsx';
-import AppShell from './components/layout/AppShell.jsx';
-import BootSkeleton from './components/ui/BootSkeleton.jsx';
+import { Routes, Route, Navigate } from 'react-router-dom'
+import { useAuth } from './context/useAuth.js'
+import LoginPage from './pages/LoginPage.jsx'
+import RegisterPage from './pages/RegisterPage.jsx'
+import ForgotPasswordPage from './pages/ForgotPasswordPage.jsx'
+import ResetPasswordPage from './pages/ResetPasswordPage.jsx'
+import VerifyEmailPage from './pages/VerifyEmailPage.jsx'
+import DashboardPage from './pages/DashboardPage.jsx'
+import WatchlistPage from './pages/WatchlistPage.jsx'
+import SettingsPage from './pages/SettingsPage.jsx'
+import AppShell from './components/layout/AppShell.jsx'
+import BootSkeleton from './components/ui/BootSkeleton.jsx'
 
 function Protected({ children }) {
-  const { user, loading } = useAuth();
-  if (loading) return <BootSkeleton />;
-  if (!user) return <Navigate to="/login" replace />;
-  return children;
+  const { user, loading } = useAuth()
+  if (loading) return <BootSkeleton />
+  if (!user) return <Navigate to="/login" replace />
+  return children
 }
 
 function GuestOnly({ children }) {
-  const { user, loading } = useAuth();
-  if (loading) return <BootSkeleton />;
-  if (user) return <Navigate to="/" replace />;
-  return children;
+  const { user, loading } = useAuth()
+  if (loading) return <BootSkeleton />
+  if (user) return <Navigate to="/" replace />
+  return children
 }
 
 export default function App() {
@@ -60,5 +60,5 @@ export default function App() {
       </Route>
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
-  );
+  )
 }

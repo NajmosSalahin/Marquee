@@ -1,81 +1,84 @@
-import { useMemo, useState } from 'react';
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { toast } from 'sonner';
-import { AlertTriangle, Loader2 } from 'lucide-react';
-import { createItem } from '../../api/items.js';
-import { STATUSES, STATUS_LABELS, TYPE_LABELS } from '../../lib/constants.js';
-import Poster from '../ui/Poster.jsx';
-import PosterPicker from './PosterPicker.jsx';
-import RatingPicker from './RatingPicker.jsx';
+import { useMemo, useState } from 'react'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import { toast } from 'sonner'
+import { AlertTriangle, Loader2 } from 'lucide-react'
+import { createItem } from '../../api/items.js'
+import { STATUSES, STATUS_LABELS, TYPE_LABELS } from '../../lib/constants.js'
+import Poster from '../ui/Poster.jsx'
+import PosterPicker from './PosterPicker.jsx'
+import RatingPicker from './RatingPicker.jsx'
 
 const splitList = (text) =>
   text
     .split(',')
     .map((s) => s.trim())
-    .filter(Boolean);
+    .filter(Boolean)
 
 export default function AddForm({ type, result, onDone }) {
-  const queryClient = useQueryClient();
-  const existing = useQuery({ queryKey: ['items'] }).data || [];
+  const queryClient = useQueryClient()
+  const existing = useQuery({ queryKey: ['items'] }).data || []
 
   const posterOptions = useMemo(() => {
-    if (!result) return [];
-    const tagged = [];
+    if (!result) return []
+    const tagged = []
     for (const r of [result, ...(result.alternates || [])]) {
       for (const p of r.posters || []) {
-        tagged.push({ url: p.url, source: r.source });
+        tagged.push({ url: p.url, source: r.source })
       }
     }
-    return tagged;
-  }, [result]);
+    return tagged
+  }, [result])
 
   const ratingOptions = useMemo(() => {
-    if (!result) return [];
-    const opts = [];
+    if (!result) return []
+    const opts = []
     for (const r of [result, ...(result.alternates || [])]) {
-      if (r.rating != null && r.rating > 0) opts.push({ source: r.source, value: r.rating });
+      if (r.rating != null && r.rating > 0) opts.push({ source: r.source, value: r.rating })
     }
-    return opts;
-  }, [result]);
+    return opts
+  }, [result])
 
-  const initialPoster = result?.posters?.[0]?.url || '';
+  const initialPoster = result?.posters?.[0]?.url || ''
   const initialRating = useMemo(
-    () => (result?.rating != null && result.rating > 0 ? { source: result.source, value: result.rating } : null),
+    () =>
+      result?.rating != null && result.rating > 0
+        ? { source: result.source, value: result.rating }
+        : null,
     [result]
-  );
+  )
 
-  const [title, setTitle] = useState(result?.title || '');
-  const [year, setYear] = useState(result?.year || '');
-  const [overview, setOverview] = useState(result?.overview || '');
-  const [genresText, setGenresText] = useState((result?.genres || []).join(', '));
-  const [posterUrl, setPosterUrl] = useState(initialPoster);
-  const [rating, setRating] = useState(initialRating);
-  const [status, setStatus] = useState('plan_to_watch');
-  const [notes, setNotes] = useState('');
-  const [tagsText, setTagsText] = useState('');
+  const [title, setTitle] = useState(result?.title || '')
+  const [year, setYear] = useState(result?.year || '')
+  const [overview, setOverview] = useState(result?.overview || '')
+  const [genresText, setGenresText] = useState((result?.genres || []).join(', '))
+  const [posterUrl, setPosterUrl] = useState(initialPoster)
+  const [rating, setRating] = useState(initialRating)
+  const [status, setStatus] = useState('plan_to_watch')
+  const [notes, setNotes] = useState('')
+  const [tagsText, setTagsText] = useState('')
 
   const duplicate = existing.find(
     (i) => i.title.toLowerCase() === title.trim().toLowerCase() && i.type === type
-  );
+  )
 
   const mutation = useMutation({
     mutationFn: createItem,
     onSuccess: () => {
-      toast.success('Added to Watchlist');
-      queryClient.invalidateQueries({ queryKey: ['items'] });
-      onDone();
+      toast.success('Added to Watchlist')
+      queryClient.invalidateQueries({ queryKey: ['items'] })
+      onDone()
     },
     onError: (err) => toast.error(err.friendlyMessage),
-  });
+  })
 
-  const canSave = title.trim().length > 0 && !mutation.isPending;
+  const canSave = title.trim().length > 0 && !mutation.isPending
 
   return (
     <form
       className="space-y-5"
       onSubmit={(e) => {
-        e.preventDefault();
-        if (!canSave) return;
+        e.preventDefault()
+        if (!canSave) return
         mutation.mutate({
           type,
           title: title.trim(),
@@ -90,7 +93,7 @@ export default function AddForm({ type, result, onDone }) {
           tags: splitList(tagsText),
           source: result?.source || 'manual',
           externalId: result?.externalId,
-        });
+        })
       }}
     >
       {duplicate && (
@@ -98,7 +101,8 @@ export default function AddForm({ type, result, onDone }) {
           <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0 text-accent" aria-hidden="true" />
           <p>
             <span className="font-semibold">{duplicate.title}</span> is already on your watchlist
-            {duplicate.status !== 'plan_to_watch' ? ` (${STATUS_LABELS[duplicate.status]})` : ''} — adding it anyway.
+            {duplicate.status !== 'plan_to_watch' ? ` (${STATUS_LABELS[duplicate.status]})` : ''} —
+            adding it anyway.
           </p>
         </div>
       )}
@@ -107,7 +111,9 @@ export default function AddForm({ type, result, onDone }) {
         <Poster src={posterUrl} alt="Selected poster" className="rounded-lg" />
         <div className="space-y-4">
           <div>
-            <label className="label" htmlFor="af-title">Title</label>
+            <label className="label" htmlFor="af-title">
+              Title
+            </label>
             <input
               id="af-title"
               className="input"
@@ -119,7 +125,9 @@ export default function AddForm({ type, result, onDone }) {
           </div>
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="label" htmlFor="af-year">Year</label>
+              <label className="label" htmlFor="af-year">
+                Year
+              </label>
               <input
                 id="af-year"
                 className="input font-mono"
@@ -131,8 +139,15 @@ export default function AddForm({ type, result, onDone }) {
               />
             </div>
             <div>
-              <label className="label" htmlFor="af-status">Status</label>
-              <select id="af-status" className="input" value={status} onChange={(e) => setStatus(e.target.value)}>
+              <label className="label" htmlFor="af-status">
+                Status
+              </label>
+              <select
+                id="af-status"
+                className="input"
+                value={status}
+                onChange={(e) => setStatus(e.target.value)}
+              >
                 {STATUSES.map((s) => (
                   <option key={s.id} value={s.id}>
                     {s.label}
@@ -145,7 +160,9 @@ export default function AddForm({ type, result, onDone }) {
       </div>
 
       <div>
-        <label className="label" htmlFor="af-genres">Genres</label>
+        <label className="label" htmlFor="af-genres">
+          Genres
+        </label>
         <input
           id="af-genres"
           className="input"
@@ -156,7 +173,9 @@ export default function AddForm({ type, result, onDone }) {
       </div>
 
       <div>
-        <label className="label" htmlFor="af-overview">Synopsis</label>
+        <label className="label" htmlFor="af-overview">
+          Synopsis
+        </label>
         <textarea
           id="af-overview"
           className="input min-h-24 resize-y"
@@ -178,7 +197,9 @@ export default function AddForm({ type, result, onDone }) {
 
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
         <div>
-          <label className="label" htmlFor="af-tags">Tags</label>
+          <label className="label" htmlFor="af-tags">
+            Tags
+          </label>
           <input
             id="af-tags"
             className="input"
@@ -188,7 +209,9 @@ export default function AddForm({ type, result, onDone }) {
           />
         </div>
         <div>
-          <label className="label" htmlFor="af-notes">Notes</label>
+          <label className="label" htmlFor="af-notes">
+            Notes
+          </label>
           <input
             id="af-notes"
             className="input"
@@ -209,5 +232,5 @@ export default function AddForm({ type, result, onDone }) {
         </button>
       </div>
     </form>
-  );
+  )
 }

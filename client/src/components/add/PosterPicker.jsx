@@ -1,23 +1,29 @@
-import { Film } from 'lucide-react';
-import Poster from '../ui/Poster.jsx';
-import SourceBadge from '../ui/SourceBadge.jsx';
+import { Film } from 'lucide-react'
+import Poster from '../ui/Poster.jsx'
+import SourceBadge from '../ui/SourceBadge.jsx'
 
 export default function PosterPicker({ options, value, onChange }) {
-  const seen = new Set();
-  const unique = options.filter((o) => {
-    if (!o.url || seen.has(o.url)) return false;
-    seen.add(o.url);
-    return true;
-  }).slice(0, 10);
+  const seen = new Set()
+  const unique = options
+    .filter((o) => {
+      if (!o.url || seen.has(o.url)) return false
+      seen.add(o.url)
+      return true
+    })
+    .slice(0, 10)
 
   if (!unique.length) {
-    return <p className="text-sm text-muted">No posters found — add one later if a better one turns up.</p>;
+    return (
+      <p className="text-sm text-muted">
+        No posters found — add one later if a better one turns up.
+      </p>
+    )
   }
 
   return (
     <div className="grid grid-cols-3 gap-2 sm:grid-cols-5">
       {unique.map((o) => {
-        const selected = value === o.url;
+        const selected = value === o.url
         return (
           <button
             key={o.url}
@@ -35,7 +41,7 @@ export default function PosterPicker({ options, value, onChange }) {
               <span className="absolute inset-0 ring-2 ring-accent ring-inset" aria-hidden="true" />
             )}
           </button>
-        );
+        )
       })}
       <button
         type="button"
@@ -50,5 +56,5 @@ export default function PosterPicker({ options, value, onChange }) {
         <span className="text-[10px] font-semibold text-muted">No poster</span>
       </button>
     </div>
-  );
+  )
 }

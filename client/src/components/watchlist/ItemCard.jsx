@@ -1,8 +1,8 @@
-import Poster from '../ui/Poster.jsx';
-import { TYPE_LABELS } from '../../lib/constants.js';
+import Poster from '../ui/Poster.jsx'
+import { TYPE_LABELS } from '../../lib/constants.js'
 
 export default function ItemCard({ item, onClick, className = '', showMeta = true }) {
-  const rating = item.externalRating;
+  const rating = item.externalRating
   return (
     <div className={className}>
       <button
@@ -24,7 +24,9 @@ export default function ItemCard({ item, onClick, className = '', showMeta = tru
       </button>
       {showMeta && (
         <div className="mt-1.5 min-w-0">
-          <p className="truncate text-sm font-semibold text-ink group-hover:text-accent">{item.title}</p>
+          <p className="truncate text-sm font-semibold text-ink group-hover:text-accent">
+            {item.title}
+          </p>
           <p className="font-mono text-xs text-muted">
             {item.releaseYear || '—'}
             <span className="mx-1 text-muted/50">·</span>
@@ -33,5 +35,5 @@ export default function ItemCard({ item, onClick, className = '', showMeta = tru
         </div>
       )}
     </div>
-  );
+  )
 }

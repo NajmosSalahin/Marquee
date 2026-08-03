@@ -1,4 +1,4 @@
-import { create } from 'zustand';
+import { create } from 'zustand'
 
 export const useUiStore = create((set) => ({
   view: null,
@@ -11,8 +11,9 @@ export const useUiStore = create((set) => ({
     q: '',
   },
   setView: (view) => set({ view }),
-  setFilter: (key, value) =>
-    set((s) => ({ filters: { ...s.filters, [key]: value } })),
+  setFilter: (key, value) => set((s) => ({ filters: { ...s.filters, [key]: value } })),
   resetFilters: () =>
-    set({ filters: { type: 'all', status: 'all', genre: 'all', tag: 'all', sort: 'dateAdded', q: '' } }),
-}));
+    set({
+      filters: { type: 'all', status: 'all', genre: 'all', tag: 'all', sort: 'dateAdded', q: '' },
+    }),
+}))

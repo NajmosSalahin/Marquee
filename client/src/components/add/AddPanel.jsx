@@ -1,45 +1,45 @@
-import { useEffect, useState } from 'react';
-import { AnimatePresence, motion } from 'framer-motion';
-import { ArrowLeft, X } from 'lucide-react';
-import AddSearch from './AddSearch.jsx';
-import AddForm from './AddForm.jsx';
+import { useEffect, useState } from 'react'
+import { AnimatePresence, motion } from 'framer-motion'
+import { ArrowLeft, X } from 'lucide-react'
+import AddSearch from './AddSearch.jsx'
+import AddForm from './AddForm.jsx'
 
 export default function AddPanel({ open, onClose }) {
-  const [mode, setMode] = useState('search');
-  const [type, setType] = useState('movie');
-  const [selected, setSelected] = useState(null);
+  const [mode, setMode] = useState('search')
+  const [type, setType] = useState('movie')
+  const [selected, setSelected] = useState(null)
 
   useEffect(() => {
     if (open) {
-      setMode('search');
-      setSelected(null);
+      setMode('search')
+      setSelected(null)
     }
-  }, [open]);
+  }, [open])
 
   useEffect(() => {
     const onKey = (e) => {
-      if (e.key === 'Escape') onClose();
-    };
+      if (e.key === 'Escape') onClose()
+    }
     if (open) {
-      document.addEventListener('keydown', onKey);
-      document.body.style.overflow = 'hidden';
+      document.addEventListener('keydown', onKey)
+      document.body.style.overflow = 'hidden'
     }
     return () => {
-      document.removeEventListener('keydown', onKey);
-      document.body.style.overflow = '';
-    };
-  }, [open, onClose]);
+      document.removeEventListener('keydown', onKey)
+      document.body.style.overflow = ''
+    }
+  }, [open, onClose])
 
   const pickResult = (result, pickedType) => {
-    setType(pickedType);
-    setSelected(result);
-    setMode('form');
-  };
+    setType(pickedType)
+    setSelected(result)
+    setMode('form')
+  }
 
   const manual = () => {
-    setSelected(null);
-    setMode('form');
-  };
+    setSelected(null)
+    setMode('form')
+  }
 
   return (
     <AnimatePresence>
@@ -50,7 +50,11 @@ export default function AddPanel({ open, onClose }) {
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
         >
-          <button className="absolute inset-0 bg-black/60" onClick={onClose} aria-label="Close add panel" />
+          <button
+            className="absolute inset-0 bg-black/60"
+            onClick={onClose}
+            aria-label="Close add panel"
+          />
           <motion.aside
             role="dialog"
             aria-label="Add a title"
@@ -93,5 +97,5 @@ export default function AddPanel({ open, onClose }) {
         </motion.div>
       )}
     </AnimatePresence>
-  );
+  )
 }

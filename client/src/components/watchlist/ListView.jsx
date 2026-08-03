@@ -1,8 +1,8 @@
-import Poster from '../ui/Poster.jsx';
-import { STATUS_LABELS, TYPE_LABELS } from '../../lib/constants.js';
-import { formatDate } from '../../lib/format.js';
+import Poster from '../ui/Poster.jsx'
+import { STATUS_LABELS, TYPE_LABELS } from '../../lib/constants.js'
+import { formatDate } from '../../lib/format.js'
 
-const SORTABLE = ['title', 'releaseYear', 'rating', 'dateAdded'];
+const SORTABLE = ['title', 'releaseYear', 'rating', 'dateAdded']
 
 export default function ListView({ items, sort, onSort, onItemClick }) {
   return (
@@ -17,7 +17,13 @@ export default function ListView({ items, sort, onSort, onItemClick }) {
                   onClick={() => onSort(key)}
                   className={`inline-flex items-center gap-1 hover:text-ink ${sort === key ? 'text-accent' : ''}`}
                 >
-                  {key === 'releaseYear' ? 'Year' : key === 'dateAdded' ? 'Added' : key === 'rating' ? 'Rating' : key}
+                  {key === 'releaseYear'
+                    ? 'Year'
+                    : key === 'dateAdded'
+                      ? 'Added'
+                      : key === 'rating'
+                        ? 'Rating'
+                        : key}
                   <span aria-hidden="true" className="text-[10px]">
                     {sort === key ? '▾' : ''}
                   </span>
@@ -77,5 +83,5 @@ export default function ListView({ items, sort, onSort, onItemClick }) {
         </tbody>
       </table>
     </div>
-  );
+  )
 }
