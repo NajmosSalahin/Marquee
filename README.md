@@ -83,6 +83,25 @@ Open `http://localhost:5000`. Notes:
 - Poster images load over https — the server's CSP is configured to allow them (see `server/index.js`).
 - For a dev-only preview of the production client, keep the API server running (`npm run server`) and use `npm run build --prefix client && npm run preview --prefix client` (Vite preview proxies `/api` to `:5000`).
 
+### Render
+
+The repo includes a `render.yaml` blueprint (free web service, auto-deploys on push to `master`). To set it up:
+
+1. Push the repo to GitHub, then in Render: **New → Blueprint** and point it at the `Marquee` repo.
+2. Fill in the secret env vars it asks for (they are never committed):
+   | Variable            | Value                                                                  |
+   | ------------------- | ---------------------------------------------------------------------- |
+   | `MONGODB_URI`       | Your MongoDB Atlas connection string                                   |
+   | `JWT_SECRET`        | Long random string (same one you use locally)                          |
+   | `TMDB_ACCESS_TOKEN` | TMDB API v4 token (fallback `TMDB_API_KEY` also works)                 |
+   | `OMDB_API_KEY`      | OMDb API key                                                           |
+   | `BREVO_API_KEY`     | Brevo SMTP API key                                                     |
+   | `BREVO_FROM_EMAIL`  | Brevo sender — must be a **verified sender** in Brevo or emails bounce |
+3. MongoDB Atlas: **Network Access → Add IP → Allow access from anywhere** (`0.0.0.0/0`), otherwise Render's servers can't connect. Keep the DB user password strong.
+4. The app appears at `https://marquee.onrender.com` once the build finishes.
+
+The mailer only logs links in development — on Render, reset/verify emails go out through Brevo (or log a `skipped` warning if the keys are missing).
+
 ## Notes
 
 - In development, email links are also written to `server/mailer.log` so you can test reset/verify flows without waiting for mail delivery.

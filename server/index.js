@@ -1,4 +1,4 @@
-import 'dotenv/config'
+import { config as loadEnv } from 'dotenv'
 import express from 'express'
 import helmet from 'helmet'
 import cors from 'cors'
@@ -14,6 +14,8 @@ import { notFound, errorHandler } from './middleware/errorHandler.js'
 
 const app = express()
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
+
+loadEnv({ path: path.join(__dirname, '.env') })
 
 app.set('trust proxy', 1)
 app.use(
