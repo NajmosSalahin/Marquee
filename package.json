@@ -1,0 +1,15 @@
+{
+  "name": "marquee",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Marquee — a personal watchlist for movies, TV, and anime",
+  "scripts": {
+    "dev": "concurrently -n server,client -c yellow,cyan \"npm run dev --prefix server\" \"npm run dev --prefix client\"",
+    "server": "npm run dev --prefix server",
+    "client": "npm run dev --prefix client",
+    "build": "npm run build --prefix client"
+  },
+  "devDependencies": {
+    "concurrently": "^9.1.0"
+  }
+}

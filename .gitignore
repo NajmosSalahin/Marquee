@@ -1,0 +1,10 @@
+node_modules/
+dist/
+.env
+*.local
+.DS_Store
+npm-debug.log*
+server/mailer.log
+server/server.out.log
+server/server.err.log
+server/server.pid
