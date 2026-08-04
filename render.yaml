@@ -11,7 +11,7 @@ services:
       - key: NODE_ENV
         value: production
       - key: CLIENT_URL
-        value: https://marquee.onrender.com
+        value: https://marquee-8sxr.onrender.com
       - key: MONGODB_URI
         sync: false
       - key: JWT_SECRET

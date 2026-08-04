@@ -98,7 +98,7 @@ The repo includes a `render.yaml` blueprint (free web service, auto-deploys on p
    | `BREVO_API_KEY`     | Brevo SMTP API key                                                     |
    | `BREVO_FROM_EMAIL`  | Brevo sender — must be a **verified sender** in Brevo or emails bounce |
 3. MongoDB Atlas: **Network Access → Add IP → Allow access from anywhere** (`0.0.0.0/0`), otherwise Render's servers can't connect. Keep the DB user password strong.
-4. The app appears at `https://marquee.onrender.com` once the build finishes.
+4. The app appears at `https://marquee-8sxr.onrender.com` once the build finishes.
 
 The mailer only logs links in development — on Render, reset/verify emails go out through Brevo (or log a `skipped` warning if the keys are missing).
 
