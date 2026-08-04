@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useRef, useState } from 'react'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { toast } from 'sonner'
 import {
@@ -16,7 +16,7 @@ import ItemCard from './ItemCard.jsx'
 import { STATUSES } from '../../lib/constants.js'
 import { reorderItems } from '../../api/items.js'
 
-function SortableCard({ item, onItemClick }) {
+function SortableCard({ item, onItemClick, justDragged }) {
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
     id: item._id,
     data: { item },
@@ -27,14 +27,19 @@ function SortableCard({ item, onItemClick }) {
       style={{ transform: CSS.Transform.toString(transform), transition }}
       {...attributes}
       {...listeners}
-      className={isDragging ? 'relative z-10 opacity-60' : ''}
+      className={`select-none touch-none ${isDragging ? 'relative z-10 opacity-60' : ''}`}
     >
-      <ItemCard item={item} onClick={() => onItemClick(item)} />
+      <ItemCard
+        item={item}
+        onClick={() => {
+          if (!justDragged.current) onItemClick(item)
+        }}
+      />
     </div>
   )
 }
 
-function Column({ status, items, onItemClick, empty }) {
+function Column({ status, items, onItemClick, empty, justDragged }) {
   const { setNodeRef, isOver } = useDroppable({ id: status })
   return (
     <section
@@ -56,7 +61,12 @@ function Column({ status, items, onItemClick, empty }) {
         )}
         <SortableContext items={items.map((i) => i._id)} strategy={verticalListSortingStrategy}>
           {items.map((item) => (
-            <SortableCard key={item._id} item={item} onItemClick={onItemClick} />
+            <SortableCard
+              key={item._id}
+              item={item}
+              onItemClick={onItemClick}
+              justDragged={justDragged}
+            />
           ))}
         </SortableContext>
       </div>
@@ -67,6 +77,7 @@ function Column({ status, items, onItemClick, empty }) {
 export default function BoardView({ itemsByStatus, onItemClick }) {
   const queryClient = useQueryClient()
   const [activeItem, setActiveItem] = useState(null)
+  const justDragged = useRef(false)
 
   const sensors = useSensors(useSensor(PointerSensor, { activationConstraint: { distance: 6 } }))
 
@@ -80,8 +91,21 @@ export default function BoardView({ itemsByStatus, onItemClick }) {
 
   const handleDragStart = (e) => setActiveItem(e.active.data.current?.item || null)
 
+  const markDragged = () => {
+    justDragged.current = true
+    window.setTimeout(() => {
+      justDragged.current = false
+    }, 300)
+  }
+
+  const handleDragCancel = () => {
+    setActiveItem(null)
+    markDragged()
+  }
+
   const handleDragEnd = (e) => {
     setActiveItem(null)
+    markDragged()
     const { active, over } = e
     if (!over || active.id === over.id) return
 
@@ -145,6 +169,7 @@ export default function BoardView({ itemsByStatus, onItemClick }) {
       collisionDetection={closestCorners}
       onDragStart={handleDragStart}
       onDragEnd={handleDragEnd}
+      onDragCancel={handleDragCancel}
     >
       <div className="flex gap-4 overflow-x-auto pb-4" aria-label="Watchlist board">
         {STATUSES.map((status) => (
@@ -154,6 +179,7 @@ export default function BoardView({ itemsByStatus, onItemClick }) {
             items={itemsByStatus[status.id] || []}
             onItemClick={onItemClick}
             empty="Drag titles here"
+            justDragged={justDragged}
           />
         ))}
       </div>

@@ -18,6 +18,7 @@ export default function Poster({ src, alt, className = '', onClick, loading }) {
       src={src}
       alt={alt}
       loading="lazy"
+      draggable={false}
       onClick={onClick}
       className={`aspect-[2/3] w-full bg-surface2 object-cover ${onClick ? 'cursor-pointer' : ''} ${className}`}
     />

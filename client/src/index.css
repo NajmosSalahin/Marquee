@@ -42,6 +42,11 @@ body {
   background: color-mix(in srgb, var(--accent) 35%, transparent);
 }
 
+img {
+  -webkit-user-drag: none;
+  user-drag: none;
+}
+
 *:focus-visible {
   outline: 2px solid var(--accent);
   outline-offset: 2px;
