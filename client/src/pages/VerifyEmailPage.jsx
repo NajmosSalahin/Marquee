@@ -52,7 +52,7 @@ export default function VerifyEmailPage() {
               <BadgeCheck className="mx-auto h-8 w-8 text-accent" aria-hidden="true" />
               <p className="font-semibold text-ink">Email verified</p>
               <p className="text-sm text-muted">Your account is confirmed.</p>
-              <Link to="/" className="btn btn-accent mt-2 w-full">
+              <Link to="/dashboard" className="btn btn-accent mt-2 w-full">
                 Go to your watchlist
               </Link>
             </>
@@ -61,7 +61,7 @@ export default function VerifyEmailPage() {
             <>
               <p className="font-semibold text-ink">Couldn't verify that link</p>
               <p className="text-sm text-muted">{error}</p>
-              <Link to="/" className="btn btn-ghost mt-2 w-full">
+              <Link to="/dashboard" className="btn btn-ghost mt-2 w-full">
                 Go to Dashboard
               </Link>
             </>

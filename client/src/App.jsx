@@ -7,6 +7,7 @@ import ResetPasswordPage from './pages/ResetPasswordPage.jsx'
 import VerifyEmailPage from './pages/VerifyEmailPage.jsx'
 import DashboardPage from './pages/DashboardPage.jsx'
 import WatchlistPage from './pages/WatchlistPage.jsx'
+import LandingPage from './pages/LandingPage.jsx'
 import AppShell from './components/layout/AppShell.jsx'
 import BootSkeleton from './components/ui/BootSkeleton.jsx'
 
@@ -20,13 +21,14 @@ function Protected({ children }) {
 function GuestOnly({ children }) {
   const { user, loading } = useAuth()
   if (loading) return <BootSkeleton />
-  if (user) return <Navigate to="/" replace />
+  if (user) return <Navigate to="/dashboard" replace />
   return children
 }
 
 export default function App() {
   return (
     <Routes>
+      <Route path="/" element={<LandingPage />} />
       <Route
         path="/login"
         element={
@@ -53,7 +55,7 @@ export default function App() {
           </Protected>
         }
       >
-        <Route path="/" element={<DashboardPage />} />
+        <Route path="/dashboard" element={<DashboardPage />} />
         <Route path="/watchlist" element={<WatchlistPage />} />
       </Route>
       <Route path="*" element={<Navigate to="/" replace />} />

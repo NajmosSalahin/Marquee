@@ -4,7 +4,7 @@ import { useAuth } from '../../context/useAuth.js'
 import ProfileMenu from './ProfileMenu.jsx'
 
 const NAV = [
-  { to: '/', label: 'Dashboard', icon: LayoutDashboard, end: true },
+  { to: '/dashboard', label: 'Dashboard', icon: LayoutDashboard, end: true },
   { to: '/watchlist', label: 'Watchlist', icon: ListVideo, end: false },
 ]
 
@@ -15,7 +15,7 @@ export default function Header({ onAdd, onSettings }) {
   return (
     <header className="sticky top-0 z-40 border-b border-line bg-base/85 backdrop-blur-md">
       <div className="mx-auto flex h-16 max-w-7xl items-center gap-4 px-4 sm:px-6">
-        <Link to="/" className="flex shrink-0 items-baseline gap-1">
+        <Link to="/dashboard" className="flex shrink-0 items-baseline gap-1">
           <span className="font-display text-2xl font-semibold tracking-tight text-ink">
             Marquee
             <span className="text-accent">.</span>
