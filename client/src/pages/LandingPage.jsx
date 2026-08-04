@@ -107,7 +107,7 @@ export default function LandingPage() {
 
       <section className="flex flex-col items-center px-4 pb-20 pt-20 text-center sm:pt-28">
         <BulbRail />
-        <h1 className="mt-8 font-display text-[clamp(3.5rem,13vw,8rem)] font-semibold leading-none tracking-tight text-ink">
+        <h1 className="mt-6 font-display text-[clamp(3.5rem,13vw,8rem)] font-semibold leading-none tracking-tight text-ink">
           Marquee<span className="text-accent">.</span>
         </h1>
         <BulbRail />
