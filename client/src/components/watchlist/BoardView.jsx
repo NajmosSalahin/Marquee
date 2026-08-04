@@ -50,7 +50,7 @@ function SortableCard({ item, onItemClick, justDragged }) {
 }
 
 function Column({ status, items, onItemClick, empty, justDragged }) {
-  const { setNodeRef, isOver } = useDroppable({ id: status })
+  const { setNodeRef, isOver } = useDroppable({ id: status.id })
   return (
     <section
       ref={setNodeRef}
