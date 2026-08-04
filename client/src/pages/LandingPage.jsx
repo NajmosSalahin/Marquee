@@ -31,8 +31,8 @@ function BulbRail() {
       {Array.from({ length: BULBS }).map((_, i) => (
         <span
           key={i}
-          className={`bulb ${i >= BULBS - 3 ? 'bulb-flicker' : ''}`}
-          style={{ animationDelay: `${i * 0.09}s` }}
+          className="bulb"
+          style={{ animationDelay: `${-i * 0.12}s` }}
         />
       ))}
     </div>

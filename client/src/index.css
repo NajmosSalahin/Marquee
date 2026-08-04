@@ -128,56 +128,27 @@ body {
   border-radius: 9999px;
   background: #4a412f;
   opacity: 0.3;
-  animation: bulb-pop 0.8s ease-out forwards;
-}
-.bulb-flicker {
-  animation: bulb-pop-flicker 0.8s ease-out forwards;
+  animation: bulb-chase 1.44s ease-in-out infinite;
 }
 
-@keyframes bulb-pop {
+@keyframes bulb-chase {
   0% {
     opacity: 0.3;
-    transform: scale(0.5);
+    transform: scale(0.6);
+    box-shadow: none;
   }
-  55% {
+  25% {
     opacity: 1;
-    transform: scale(1.15);
-    background: var(--accent);
-    box-shadow: 0 0 12px 1px color-mix(in srgb, var(--accent) 55%, transparent);
-  }
-  100% {
-    opacity: 1;
-    transform: scale(1);
+    transform: scale(1.1);
     background: var(--accent);
     box-shadow:
-      0 0 16px 3px color-mix(in srgb, var(--accent) 55%, transparent),
+      0 0 14px 2px color-mix(in srgb, var(--accent) 60%, transparent),
       0 0 3px 1px var(--accent);
   }
-}
-@keyframes bulb-pop-flicker {
-  0% {
+  100% {
     opacity: 0.3;
-    transform: scale(0.5);
-  }
-  55% {
-    opacity: 1;
-    transform: scale(1.15);
-    background: var(--accent);
-    box-shadow: 0 0 12px 1px color-mix(in srgb, var(--accent) 55%, transparent);
-  }
-  68% {
-    opacity: 0.55;
-  }
-  80% {
-    opacity: 1;
-  }
-  100% {
-    opacity: 1;
-    transform: scale(1);
-    background: var(--accent);
-    box-shadow:
-      0 0 16px 3px color-mix(in srgb, var(--accent) 55%, transparent),
-      0 0 3px 1px var(--accent);
+    transform: scale(0.6);
+    box-shadow: none;
   }
 }
 
@@ -200,8 +171,7 @@ body {
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .bulb,
-  .bulb-flicker {
+  .bulb {
     animation: none;
     opacity: 1;
     transform: none;
