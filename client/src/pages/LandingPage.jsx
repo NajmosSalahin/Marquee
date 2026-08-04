@@ -1,3 +1,4 @@
+import { useEffect, useRef, useState } from 'react'
 import { Link, Navigate } from 'react-router-dom'
 import { CheckCircle2, Clock, Pause, Play, XCircle } from 'lucide-react'
 import { useAuth } from '../context/useAuth.js'
@@ -39,16 +40,39 @@ function BulbRail() {
 }
 
 function Ticker() {
+  const wrapRef = useRef(null)
+  const unitRef = useRef(null)
+  const [copies, setCopies] = useState(2)
+
+  useEffect(() => {
+    const measure = () => {
+      const wrap = wrapRef.current
+      const unit = unitRef.current
+      if (!wrap || !unit) return
+      const wrapW = wrap.getBoundingClientRect().width
+      const unitW = unit.getBoundingClientRect().width
+      if (!unitW) return
+      const needed = Math.ceil((wrapW * 2) / unitW) + 1
+      setCopies(needed % 2 === 0 ? needed : needed + 1)
+    }
+    measure()
+    const ro = new ResizeObserver(measure)
+    if (wrapRef.current) ro.observe(wrapRef.current)
+    if (unitRef.current) ro.observe(unitRef.current)
+    return () => ro.disconnect()
+  }, [])
+
   return (
-    <div className="ticker border-y border-line py-3">
+    <div className="ticker border-y border-line py-3" ref={wrapRef}>
       <div className="ticker-track">
-        {[TICKER, TICKER].map((line, i) => (
+        {Array.from({ length: copies }).map((_, i) => (
           <span
             key={i}
             aria-hidden="true"
+            ref={i === 0 ? unitRef : undefined}
             className="shrink-0 pr-10 font-mono text-[11px] font-medium uppercase tracking-[0.25em] text-muted"
           >
-            {line} ·
+            {TICKER} ·
           </span>
         ))}
       </div>
