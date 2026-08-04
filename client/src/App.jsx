@@ -7,7 +7,6 @@ import ResetPasswordPage from './pages/ResetPasswordPage.jsx'
 import VerifyEmailPage from './pages/VerifyEmailPage.jsx'
 import DashboardPage from './pages/DashboardPage.jsx'
 import WatchlistPage from './pages/WatchlistPage.jsx'
-import SettingsPage from './pages/SettingsPage.jsx'
 import AppShell from './components/layout/AppShell.jsx'
 import BootSkeleton from './components/ui/BootSkeleton.jsx'
 
@@ -56,7 +55,6 @@ export default function App() {
       >
         <Route path="/" element={<DashboardPage />} />
         <Route path="/watchlist" element={<WatchlistPage />} />
-        <Route path="/settings" element={<SettingsPage />} />
       </Route>
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>

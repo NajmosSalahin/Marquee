@@ -8,7 +8,7 @@ const NAV = [
   { to: '/watchlist', label: 'Watchlist', icon: ListVideo, end: false },
 ]
 
-export default function Header({ onAdd }) {
+export default function Header({ onAdd, onSettings }) {
   const { logout } = useAuth()
   const navigate = useNavigate()
 
@@ -40,23 +40,19 @@ export default function Header({ onAdd }) {
           ))}
         </nav>
 
-        <NavLink
-          to="/settings"
-          className={({ isActive }) =>
-            `inline-flex items-center gap-1.5 rounded-lg px-3 py-2 text-sm font-medium transition-colors md:hidden ${
-              isActive ? 'text-accent' : 'text-muted hover:text-ink hover:bg-surface'
-            }`
-          }
+        <button
+          onClick={onSettings}
+          className="inline-flex items-center gap-1.5 rounded-lg px-3 py-2 text-sm font-medium text-muted transition-colors hover:text-ink hover:bg-surface md:hidden"
         >
           <Settings className="h-4 w-4" aria-hidden="true" />
-        </NavLink>
+        </button>
 
         <div className="ml-auto flex items-center gap-3">
           <button onClick={onAdd} className="btn btn-accent" aria-label="Add to watchlist">
             <Plus className="h-4 w-4" aria-hidden="true" />
             <span className="hidden sm:inline">Add</span>
           </button>
-          <ProfileMenu />
+          <ProfileMenu onSettings={onSettings} />
           <button
             onClick={async () => {
               await logout()

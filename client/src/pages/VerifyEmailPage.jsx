@@ -61,8 +61,8 @@ export default function VerifyEmailPage() {
             <>
               <p className="font-semibold text-ink">Couldn't verify that link</p>
               <p className="text-sm text-muted">{error}</p>
-              <Link to="/settings" className="btn btn-ghost mt-2 w-full">
-                Resend from Settings
+              <Link to="/" className="btn btn-ghost mt-2 w-full">
+                Go to Dashboard
               </Link>
             </>
           )}

@@ -1,11 +1,11 @@
 import { useMutation } from '@tanstack/react-query'
 import { toast } from 'sonner'
 import { BadgeCheck, MailWarning } from 'lucide-react'
-import { useAuth } from '../context/useAuth.js'
-import { updatePreferences } from '../api/users.js'
-import { resendVerification } from '../api/auth.js'
-import { ACCENTS, STATUSES, TYPES } from '../lib/constants.js'
-import { formatDate } from '../lib/format.js'
+import { useAuth } from '../../context/useAuth.js'
+import { updatePreferences } from '../../api/users.js'
+import { resendVerification } from '../../api/auth.js'
+import { ACCENTS, STATUSES, TYPES } from '../../lib/constants.js'
+import { formatDate } from '../../lib/format.js'
 
 function SettingCard({ title, body, children }) {
   return (
@@ -17,7 +17,7 @@ function SettingCard({ title, body, children }) {
   )
 }
 
-export default function SettingsPage() {
+export default function SettingsBody() {
   const { user, updateUser } = useAuth()
   const prefs = user?.preferences || {
     accentColor: 'amber',
@@ -44,13 +44,6 @@ export default function SettingsPage() {
 
   return (
     <div className="max-w-2xl space-y-6">
-      <div>
-        <h1 className="font-display text-3xl font-semibold tracking-tight text-ink">Settings</h1>
-        <p className="mt-1 text-sm text-muted">
-          These follow you across devices — they're saved to your account, not this browser.
-        </p>
-      </div>
-
       <SettingCard title="Accent color" body="Buttons, focus rings, and that marquee glow.">
         <div className="flex flex-wrap gap-3">
           {ACCENTS.map((a) => (

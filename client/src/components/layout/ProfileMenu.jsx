@@ -1,12 +1,12 @@
 import { useEffect, useRef, useState } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 import { useMutation } from '@tanstack/react-query'
 import { toast } from 'sonner'
 import { Loader2, LogOut, MailWarning, Settings } from 'lucide-react'
 import { useAuth } from '../../context/useAuth.js'
 import { resendVerification } from '../../api/auth.js'
 
-export default function ProfileMenu() {
+export default function ProfileMenu({ onSettings }) {
   const { user, logout } = useAuth()
   const navigate = useNavigate()
   const [open, setOpen] = useState(false)
@@ -93,15 +93,17 @@ export default function ProfileMenu() {
             </button>
           )}
 
-          <Link
+          <button
             role="menuitem"
-            to="/settings"
             className={row}
-            onClick={() => setOpen(false)}
+            onClick={() => {
+              setOpen(false)
+              onSettings()
+            }}
           >
             <Settings className="h-4 w-4" aria-hidden="true" />
             Settings
-          </Link>
+          </button>
 
           <div className="my-1 border-t border-line" />
 
