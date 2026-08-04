@@ -7,6 +7,8 @@ import {
   useSensor,
   useSensors,
   closestCorners,
+  pointerWithin,
+  rectIntersection,
   useDroppable,
   DragOverlay,
 } from '@dnd-kit/core'
@@ -15,6 +17,14 @@ import { CSS } from '@dnd-kit/utilities'
 import ItemCard from './ItemCard.jsx'
 import { STATUSES } from '../../lib/constants.js'
 import { reorderItems } from '../../api/items.js'
+
+const collisionDetectionPriority = (args) => {
+  const pointer = pointerWithin(args)
+  if (pointer.length) return pointer
+  const rect = rectIntersection(args)
+  if (rect.length) return rect
+  return closestCorners(args)
+}
 
 function SortableCard({ item, onItemClick, justDragged }) {
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
@@ -106,26 +116,35 @@ export default function BoardView({ itemsByStatus, onItemClick }) {
   const handleDragEnd = (e) => {
     setActiveItem(null)
     markDragged()
-    const { active, over } = e
-    if (!over || active.id === over.id) return
+    const { active, over, collisions } = e
 
     const items = queryClient.getQueryData(['items']) || []
     const dragged = items.find((i) => i._id === active.id)
-    if (!dragged) return
+    if (!dragged) {
+      toast.error('Could not move that title — refresh and try again')
+      return
+    }
+
+    const target = over?.id ?? collisions?.[0]?.id ?? null
+    if (!target) {
+      toast('Release the card on a column to move it')
+      return
+    }
+    if (target === dragged._id) return
 
     const byStatus = (status) => items.filter((i) => i.status === status)
 
-    const overIsColumn = STATUSES.some((s) => s.id === over.id)
+    const overIsColumn = STATUSES.some((s) => s.id === target)
     let toStatus
     let toIndex
     if (overIsColumn) {
-      toStatus = over.id
-      toIndex = byStatus(over.id).length
+      toStatus = target
+      toIndex = byStatus(target).length
     } else {
-      const overItem = items.find((i) => i._id === over.id)
+      const overItem = items.find((i) => i._id === target)
       if (!overItem) return
       toStatus = overItem.status
-      toIndex = byStatus(overItem.status).findIndex((i) => i._id === over.id)
+      toIndex = byStatus(overItem.status).findIndex((i) => i._id === target)
     }
 
     const oldStatus = dragged.status
@@ -166,7 +185,7 @@ export default function BoardView({ itemsByStatus, onItemClick }) {
   return (
     <DndContext
       sensors={sensors}
-      collisionDetection={closestCorners}
+      collisionDetection={collisionDetectionPriority}
       onDragStart={handleDragStart}
       onDragEnd={handleDragEnd}
       onDragCancel={handleDragCancel}
