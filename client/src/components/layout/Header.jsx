@@ -1,15 +1,15 @@
 import { Link, NavLink, useNavigate } from 'react-router-dom'
-import { Clapperboard, LayoutDashboard, ListVideo, LogOut, Plus, Settings } from 'lucide-react'
+import { LayoutDashboard, ListVideo, LogOut, Plus, Settings } from 'lucide-react'
 import { useAuth } from '../../context/useAuth.js'
+import ProfileMenu from './ProfileMenu.jsx'
 
 const NAV = [
   { to: '/', label: 'Dashboard', icon: LayoutDashboard, end: true },
   { to: '/watchlist', label: 'Watchlist', icon: ListVideo, end: false },
-  { to: '/settings', label: 'Settings', icon: Settings, end: false },
 ]
 
 export default function Header({ onAdd }) {
-  const { user, logout } = useAuth()
+  const { logout } = useAuth()
   const navigate = useNavigate()
 
   return (
@@ -40,23 +40,29 @@ export default function Header({ onAdd }) {
           ))}
         </nav>
 
+        <NavLink
+          to="/settings"
+          className={({ isActive }) =>
+            `inline-flex items-center gap-1.5 rounded-lg px-3 py-2 text-sm font-medium transition-colors md:hidden ${
+              isActive ? 'text-accent' : 'text-muted hover:text-ink hover:bg-surface'
+            }`
+          }
+        >
+          <Settings className="h-4 w-4" aria-hidden="true" />
+        </NavLink>
+
         <div className="ml-auto flex items-center gap-3">
           <button onClick={onAdd} className="btn btn-accent" aria-label="Add to watchlist">
             <Plus className="h-4 w-4" aria-hidden="true" />
             <span className="hidden sm:inline">Add</span>
           </button>
-          <div className="hidden items-center gap-2 md:flex" title={user?.email}>
-            <span className="flex h-8 w-8 items-center justify-center rounded-full bg-surface2 text-sm font-bold text-accent ring-1 ring-line">
-              {user?.username?.[0]?.toUpperCase()}
-            </span>
-            <span className="text-sm font-medium text-ink">{user?.username}</span>
-          </div>
+          <ProfileMenu />
           <button
             onClick={async () => {
               await logout()
               navigate('/login')
             }}
-            className="btn btn-quiet p-2"
+            className="btn btn-quiet p-2 md:hidden"
             aria-label="Sign out"
             title="Sign out"
           >
