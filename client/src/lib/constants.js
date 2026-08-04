@@ -8,6 +8,14 @@ export const STATUSES = [
 
 export const STATUS_LABELS = Object.fromEntries(STATUSES.map((s) => [s.id, s.label]))
 
+export const STATUS_DESCRIPTIONS = {
+  plan_to_watch: 'Queued up for later',
+  watching: 'Currently in progress',
+  completed: 'Finished, no more to go',
+  on_hold: 'Paused, might come back',
+  dropped: 'Stopped watching',
+}
+
 export const TYPES = [
   { id: 'movie', label: 'Movie' },
   { id: 'tv', label: 'TV' },

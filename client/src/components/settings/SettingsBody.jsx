@@ -4,7 +4,7 @@ import { BadgeCheck, MailWarning } from 'lucide-react'
 import { useAuth } from '../../context/useAuth.js'
 import { updatePreferences } from '../../api/users.js'
 import { resendVerification } from '../../api/auth.js'
-import { ACCENTS, STATUSES, TYPES } from '../../lib/constants.js'
+import { ACCENTS, STATUSES, STATUS_DESCRIPTIONS, TYPES } from '../../lib/constants.js'
 import { formatDate } from '../../lib/format.js'
 
 function SettingCard({ title, body, children }) {
@@ -164,10 +164,21 @@ export default function SettingsBody() {
         </dl>
       </SettingCard>
 
-      <p className="text-xs text-muted">
-        Statuses: {STATUSES.map((s) => s.label).join(' · ')} — Types:{' '}
-        {TYPES.map((t) => t.label).join(' · ')}
-      </p>
+      <SettingCard title="Watchlist statuses" body="What each status means on your list.">
+        <dl className="space-y-2.5 text-sm">
+          {STATUSES.map((s) => (
+            <div key={s.id} className="flex items-baseline justify-between gap-4">
+              <dt className="shrink-0 font-semibold text-ink">{s.label}</dt>
+              <dd className="text-right text-muted">{STATUS_DESCRIPTIONS[s.id]}</dd>
+            </div>
+          ))}
+        </dl>
+        <p className="mt-4 border-t border-line pt-3 text-xs text-muted">
+          <span className="font-semibold text-ink">Types:</span>{' '}
+          {TYPES.map((t) => t.label).join(' · ')} — what kind of title it is, used to group the
+          board and filter your list.
+        </p>
+      </SettingCard>
     </div>
   )
 }
