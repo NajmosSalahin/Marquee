@@ -12,7 +12,7 @@ async function fetchWithRetry(url, attempts = 2) {
   throw new Error('Jikan unavailable')
 }
 
-export async function searchJikan(query) {
+export async function searchJikan(_type, query) {
   const url = new URL('https://api.jikan.moe/v4/anime')
   url.searchParams.set('q', query)
   url.searchParams.set('limit', '6')

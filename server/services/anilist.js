@@ -22,7 +22,7 @@ function stripMarkup(text) {
     .trim()
 }
 
-export async function searchAnilist(query) {
+export async function searchAnilist(_type, query) {
   const res = await fetch(ENDPOINT, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json', accept: 'application/json' },

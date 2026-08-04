@@ -114,9 +114,12 @@ export default function BoardView({ itemsByStatus, onItemClick }) {
       (acc, i, idx) => (i.status === toStatus ? [...acc, idx] : acc),
       []
     )
-    const insertAt = destIndices.length
-      ? destIndices[Math.min(toIndex, destIndices.length)]
-      : list.length
+    const insertAt =
+      destIndices.length === 0
+        ? list.length
+        : toIndex >= destIndices.length
+          ? destIndices[destIndices.length - 1] + 1
+          : destIndices[toIndex]
     list.splice(insertAt, 0, moved)
 
     const affectedStatuses = new Set([oldStatus, toStatus])
