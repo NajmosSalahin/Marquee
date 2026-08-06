@@ -20,9 +20,33 @@ export const TYPES = [
   { id: 'movie', label: 'Movie' },
   { id: 'tv', label: 'TV' },
   { id: 'anime', label: 'Anime' },
+  { id: 'book', label: 'Book' },
+  { id: 'manga', label: 'Manga' },
 ]
 
 export const TYPE_LABELS = Object.fromEntries(TYPES.map((t) => [t.id, t.label]))
+
+export const TYPE_SOURCE_HINTS = {
+  movie: 'TMDB + OMDb',
+  tv: 'TMDB + OMDb',
+  anime: 'Jikan + AniList',
+  book: 'Google Books + Open Library',
+  manga: 'Jikan + AniList',
+}
+
+export const READING_STATUS_LABELS = {
+  plan_to_watch: 'Plan to Read',
+  watching: 'Reading',
+  completed: 'Completed',
+  on_hold: 'On Hold',
+  dropped: 'Dropped',
+}
+
+export const READING_TYPES = new Set(['book', 'manga'])
+
+export function statusLabel(type, status) {
+  return (READING_TYPES.has(type) ? READING_STATUS_LABELS : STATUS_LABELS)[status] || status
+}
 
 export const ACCENTS = [
   { id: 'amber', label: 'Marquee Amber', color: '#E3A857' },
@@ -37,6 +61,8 @@ export const SOURCE_LABELS = {
   omdb: 'OMDb',
   jikan: 'Jikan',
   anilist: 'AniList',
+  googlebooks: 'Google Books',
+  openlibrary: 'Open Library',
   manual: 'Manual',
 }
 

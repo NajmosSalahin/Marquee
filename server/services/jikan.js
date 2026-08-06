@@ -12,8 +12,9 @@ async function fetchWithRetry(url, attempts = 2) {
   throw new Error('Jikan unavailable')
 }
 
-export async function searchJikan(_type, query) {
-  const url = new URL('https://api.jikan.moe/v4/anime')
+export async function searchJikan(type, query) {
+  const mediaType = type === 'manga' ? 'manga' : 'anime'
+  const url = new URL(`https://api.jikan.moe/v4/${mediaType}`)
   url.searchParams.set('q', query)
   url.searchParams.set('limit', '6')
   url.searchParams.set('order_by', 'popularity')
@@ -23,7 +24,9 @@ export async function searchJikan(_type, query) {
   const data = await res.json()
 
   return (data.data || []).map((a) => {
-    const year = a.year || a.aired?.prop?.from?.year || (a.aired?.from || '').slice(0, 4) || ''
+    const published = a.published || a.aired
+    const year =
+      a.year || published?.prop?.from?.year || (published?.from || '').slice(0, 4) || ''
     const variants = [
       a.images?.jpg?.large_image_url,
       a.images?.webp?.large_image_url,

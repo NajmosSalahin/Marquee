@@ -1,9 +1,9 @@
 const ENDPOINT = 'https://graphql.anilist.co'
 
 const QUERY = `
-query ($search: String) {
+query ($search: String, $type: MediaType) {
   Page(page: 1, perPage: 6) {
-    media(search: $search, type: ANIME, sort: POPULARITY_DESC) {
+    media(search: $search, type: $type, format_not: NOVEL, sort: POPULARITY_DESC) {
       id
       title { romaji english native }
       coverImage { extraLarge large medium }
@@ -22,11 +22,12 @@ function stripMarkup(text) {
     .trim()
 }
 
-export async function searchAnilist(_type, query) {
+export async function searchAnilist(type, query) {
+  const mediaType = type === 'manga' ? 'MANGA' : 'ANIME'
   const res = await fetch(ENDPOINT, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json', accept: 'application/json' },
-    body: JSON.stringify({ query: QUERY, variables: { search: query } }),
+    body: JSON.stringify({ query: QUERY, variables: { search: query, type: mediaType } }),
   })
   if (!res.ok) throw new Error(`AniList responded ${res.status}`)
   const data = await res.json()

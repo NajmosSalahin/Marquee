@@ -1,5 +1,5 @@
 import Poster from '../ui/Poster.jsx'
-import { STATUS_LABELS, TYPE_LABELS } from '../../lib/constants.js'
+import { TYPE_LABELS, statusLabel } from '../../lib/constants.js'
 import { formatDate } from '../../lib/format.js'
 
 const SORTABLE = ['title', 'releaseYear', 'rating', 'dateAdded']
@@ -64,7 +64,7 @@ export default function ListView({ items, sort, onSort, onItemClick }) {
                 {formatDate(item.dateAdded)}
               </td>
               <td className="hidden px-4 py-2.5 sm:table-cell">
-                <span className="chip">{STATUS_LABELS[item.status]}</span>
+                <span className="chip">{statusLabel(item.type, item.status)}</span>
               </td>
               <td className="hidden px-4 py-2.5 md:table-cell">
                 <div className="flex flex-wrap gap-1">

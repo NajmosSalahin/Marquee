@@ -2,10 +2,10 @@ import { useEffect, useMemo, useState } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { toast } from 'sonner'
-import { CalendarDays, Loader2, Trash2, X } from 'lucide-react'
+import { CalendarDays, Loader2, Trash2, X, BookOpen } from 'lucide-react'
 import { deleteItem, updateItem } from '../../api/items.js'
 import { searchTitle } from '../../api/search.js'
-import { SOURCE_LABELS, STATUSES, TYPE_LABELS } from '../../lib/constants.js'
+import { SOURCE_LABELS, STATUSES, TYPE_LABELS, statusLabel } from '../../lib/constants.js'
 import { formatDate } from '../../lib/format.js'
 import Poster from '../ui/Poster.jsx'
 import SourceBadge from '../ui/SourceBadge.jsx'
@@ -112,7 +112,7 @@ export default function ItemDrawer({ item, onClose }) {
   const remove = useMutation({
     mutationFn: () => deleteItem(item._id),
     onSuccess: () => {
-      toast.success('Removed from Watchlist')
+      toast.success('Removed from your collection')
       queryClient.invalidateQueries({ queryKey: ['items'] })
       onClose()
     },
@@ -158,6 +158,9 @@ export default function ItemDrawer({ item, onClose }) {
                     src={item.posterUrl}
                     alt={item.title}
                     className="rounded-lg shadow-card"
+                    icon={
+                      item.type === 'book' || item.type === 'manga' ? BookOpen : undefined
+                    }
                   />
                 </div>
                 <div className="min-w-0 flex-1 space-y-2.5">
@@ -216,7 +219,7 @@ export default function ItemDrawer({ item, onClose }) {
                   >
                     {STATUSES.map((s) => (
                       <option key={s.id} value={s.id}>
-                        {s.label}
+                        {statusLabel(item.type, s.id)}
                       </option>
                     ))}
                   </select>

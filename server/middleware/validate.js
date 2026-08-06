@@ -9,7 +9,7 @@ export function validate(req, res, next) {
 }
 
 export const itemValidation = [
-  body('type').optional().isIn(['movie', 'tv', 'anime']).withMessage('Pick a type'),
+  body('type').optional().isIn(['movie', 'tv', 'anime', 'book', 'manga']).withMessage('Pick a type'),
   body('title').optional().trim().isLength({ min: 1, max: 200 }).withMessage('Title is required'),
   body('status')
     .optional()
@@ -17,11 +17,11 @@ export const itemValidation = [
     .withMessage('Invalid status'),
   body('ratingSource')
     .optional()
-    .isIn(['tmdb', 'omdb', 'jikan', 'anilist', 'manual'])
+    .isIn(['tmdb', 'omdb', 'jikan', 'anilist', 'googlebooks', 'openlibrary', 'manual'])
     .withMessage('Invalid rating source'),
   body('source')
     .optional()
-    .isIn(['tmdb', 'omdb', 'jikan', 'anilist', 'manual'])
+    .isIn(['tmdb', 'omdb', 'jikan', 'anilist', 'googlebooks', 'openlibrary', 'manual'])
     .withMessage('Invalid source'),
   body('releaseYear')
     .optional({ nullable: true })
@@ -36,7 +36,7 @@ export const itemValidation = [
 ]
 
 export const createItemValidation = [
-  body('type').isIn(['movie', 'tv', 'anime']).withMessage('Pick a type'),
+  body('type').isIn(['movie', 'tv', 'anime', 'book', 'manga']).withMessage('Pick a type'),
   body('title').trim().isLength({ min: 1, max: 200 }).withMessage('Title is required'),
   ...itemValidation,
 ]

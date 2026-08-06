@@ -3,7 +3,7 @@ import { useQuery } from '@tanstack/react-query'
 import { Search, PenLine } from 'lucide-react'
 import { searchTitle } from '../../api/search.js'
 import useDebounce from '../../hooks/useDebounce.js'
-import { TYPES, TYPE_LABELS } from '../../lib/constants.js'
+import { TYPES, TYPE_LABELS, TYPE_SOURCE_HINTS } from '../../lib/constants.js'
 import Skeleton from '../ui/Skeleton.jsx'
 import Poster from '../ui/Poster.jsx'
 import SourceBadge from '../ui/SourceBadge.jsx'
@@ -76,9 +76,7 @@ export default function AddSearch({ onPick, onManual }) {
         />
         <input
           className="input pl-9"
-          placeholder={`Search ${TYPE_LABELS[type]}s — TMDB + OMDb${
-            type === 'anime' ? ' · Jikan + AniList' : ''
-          }`}
+          placeholder={`Search ${TYPE_LABELS[type]}s — ${TYPE_SOURCE_HINTS[type]}`}
           value={q}
           onChange={(e) => setQ(e.target.value)}
           autoFocus

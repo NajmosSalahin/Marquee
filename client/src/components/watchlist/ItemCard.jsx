@@ -1,8 +1,10 @@
+import { BookOpen } from 'lucide-react'
 import Poster from '../ui/Poster.jsx'
 import { TYPE_LABELS } from '../../lib/constants.js'
 
 export default function ItemCard({ item, onClick, className = '', showMeta = true }) {
   const rating = item.externalRating
+  const fallbackIcon = item.type === 'book' || item.type === 'manga' ? BookOpen : undefined
   return (
     <div className={className}>
       <button
@@ -10,7 +12,7 @@ export default function ItemCard({ item, onClick, className = '', showMeta = tru
         className="poster-glow group relative block w-full overflow-hidden rounded-lg bg-surface text-left"
         aria-label={`${item.title} (${item.releaseYear || 'unknown year'}) — ${TYPE_LABELS[item.type]}`}
       >
-        <Poster src={item.posterUrl} alt={item.title} />
+        <Poster src={item.posterUrl} alt={item.title} icon={fallbackIcon} />
         {rating != null && (
           <span className="absolute right-1.5 top-1.5 rounded bg-base/85 px-1.5 py-0.5 font-mono text-xs font-semibold text-ink ring-1 ring-line/60">
             {Number(rating).toFixed(1)}

@@ -3,7 +3,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { toast } from 'sonner'
 import { AlertTriangle, Loader2 } from 'lucide-react'
 import { createItem } from '../../api/items.js'
-import { STATUSES, STATUS_LABELS, TYPE_LABELS } from '../../lib/constants.js'
+import { STATUSES, TYPE_LABELS, statusLabel } from '../../lib/constants.js'
 import Poster from '../ui/Poster.jsx'
 import PosterPicker from './PosterPicker.jsx'
 import RatingPicker from './RatingPicker.jsx'
@@ -101,7 +101,7 @@ export default function AddForm({ type, result, onDone }) {
           <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0 text-accent" aria-hidden="true" />
           <p>
             <span className="font-semibold">{duplicate.title}</span> is already on your watchlist
-            {duplicate.status !== 'plan_to_watch' ? ` (${STATUS_LABELS[duplicate.status]})` : ''} —
+            {duplicate.status !== 'plan_to_watch' ? ` (${statusLabel(duplicate.type, duplicate.status)})` : ''} —
             adding it anyway.
           </p>
         </div>
@@ -150,7 +150,7 @@ export default function AddForm({ type, result, onDone }) {
               >
                 {STATUSES.map((s) => (
                   <option key={s.id} value={s.id}>
-                    {s.label}
+                    {statusLabel(type, s.id)}
                   </option>
                 ))}
               </select>

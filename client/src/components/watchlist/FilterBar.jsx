@@ -1,9 +1,13 @@
 import { useMemo } from 'react'
 import { RotateCcw, Search } from 'lucide-react'
-import { TYPES, SORTS } from '../../lib/constants.js'
+import { SORTS, STATUSES, STATUS_LABELS, TYPES } from '../../lib/constants.js'
 import { useUiStore } from '../../store/ui.js'
 
-export default function FilterBar({ items }) {
+export default function FilterBar({
+  items,
+  typeTabs = [{ id: 'all', label: 'All' }, ...TYPES],
+  statusLabels = STATUS_LABELS,
+}) {
   const { filters, setFilter, resetFilters } = useUiStore()
 
   const genreOptions = useMemo(() => {
@@ -33,7 +37,7 @@ export default function FilterBar({ items }) {
           role="group"
           aria-label="Filter by type"
         >
-          {[{ id: 'all', label: 'All' }, ...TYPES].map((t) => (
+          {typeTabs.map((t) => (
             <button
               key={t.id}
               onClick={() => setFilter('type', t.id)}
@@ -55,11 +59,11 @@ export default function FilterBar({ items }) {
           onChange={(e) => setFilter('status', e.target.value)}
         >
           <option value="all">Any status</option>
-          <option value="plan_to_watch">Plan to Watch</option>
-          <option value="watching">Watching</option>
-          <option value="completed">Completed</option>
-          <option value="on_hold">On Hold</option>
-          <option value="dropped">Dropped</option>
+          {STATUSES.map((s) => (
+            <option key={s.id} value={s.id}>
+              {statusLabels[s.id]}
+            </option>
+          ))}
         </select>
 
         <select

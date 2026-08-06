@@ -1,11 +1,12 @@
 import { Link, NavLink, useNavigate } from 'react-router-dom'
-import { LayoutDashboard, ListVideo, LogOut, Plus, Settings } from 'lucide-react'
+import { BookOpen, LayoutDashboard, ListVideo, LogOut, Plus, Settings } from 'lucide-react'
 import { useAuth } from '../../context/useAuth.js'
 import ProfileMenu from './ProfileMenu.jsx'
 
 const NAV = [
   { to: '/dashboard', label: 'Dashboard', icon: LayoutDashboard, end: true },
   { to: '/watchlist', label: 'Watchlist', icon: ListVideo, end: false },
+  { to: '/library', label: 'Library', icon: BookOpen, end: false },
 ]
 
 export default function Header({ onAdd, onSettings }) {
