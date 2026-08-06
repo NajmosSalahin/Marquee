@@ -32,6 +32,7 @@ const toResult = (a, extraAuthors = []) => ({
   year: String(yearOf(a)),
   overview: (a.synopsis || '').trim(),
   authors: [...extraAuthors, ...(a.authors || []).map((x) => x.name)].slice(0, 5),
+  studios: (a.studios || []).map((s) => s.name).slice(0, 5),
   genres: (a.genres || []).map((g) => g.name),
   rating: a.score ?? null,
   posters: [...new Set(posterVariants(a))].map((url) => ({ url, lang: null, votes: 0 })),

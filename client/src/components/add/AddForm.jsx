@@ -52,6 +52,9 @@ export default function AddForm({ type, result, onDone }) {
   const [overview, setOverview] = useState(result?.overview || '')
   const [genresText, setGenresText] = useState((result?.genres || []).join(', '))
   const [authorsText, setAuthorsText] = useState((result?.authors || []).join(', '))
+  const [directorsText, setDirectorsText] = useState((result?.directors || []).join(', '))
+  const [studiosText, setStudiosText] = useState((result?.studios || []).join(', '))
+  const [publisherText, setPublisherText] = useState(result?.publisher || '')
   const [posterUrl, setPosterUrl] = useState(initialPoster)
   const [rating, setRating] = useState(initialRating)
   const [status, setStatus] = useState('plan_to_watch')
@@ -86,7 +89,12 @@ export default function AddForm({ type, result, onDone }) {
           releaseYear: year ? Number(year) : undefined,
           overview: overview.trim(),
           genres: splitList(genresText),
-          authors: type === 'book' || type === 'manga' ? splitList(authorsText) : undefined,
+          authors: splitList(authorsText),
+          directors: type === 'book' || type === 'manga' ? undefined : splitList(directorsText),
+          studios: type === 'book' || type === 'manga' ? undefined : splitList(studiosText),
+          publisher:
+            type === 'book' || type === 'manga' ? publisherText.trim() || undefined : undefined,
+          cast: type === 'book' || type === 'manga' ? undefined : (result?.cast || []),
           posterUrl: posterUrl || undefined,
           externalRating: rating?.value,
           ratingSource: rating?.source || 'manual',
@@ -172,6 +180,50 @@ export default function AddForm({ type, result, onDone }) {
             value={authorsText}
             onChange={(e) => setAuthorsText(e.target.value)}
             placeholder="Frank Herbert"
+          />
+        </div>
+      )}
+
+      {type !== 'book' && type !== 'manga' && (
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+          <div>
+            <label className="label" htmlFor="af-directors">
+              Directors
+            </label>
+            <input
+              id="af-directors"
+              className="input"
+              value={directorsText}
+              onChange={(e) => setDirectorsText(e.target.value)}
+              placeholder="Denis Villeneuve"
+            />
+          </div>
+          <div>
+            <label className="label" htmlFor="af-studios">
+              Studios
+            </label>
+            <input
+              id="af-studios"
+              className="input"
+              value={studiosText}
+              onChange={(e) => setStudiosText(e.target.value)}
+              placeholder="Warner Bros."
+            />
+          </div>
+        </div>
+      )}
+
+      {(type === 'book' || type === 'manga') && (
+        <div>
+          <label className="label" htmlFor="af-publisher">
+            Publisher
+          </label>
+          <input
+            id="af-publisher"
+            className="input"
+            value={publisherText}
+            onChange={(e) => setPublisherText(e.target.value)}
+            placeholder="Penguin Books"
           />
         </div>
       )}

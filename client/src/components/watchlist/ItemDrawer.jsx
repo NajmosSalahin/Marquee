@@ -18,6 +18,20 @@ const splitList = (text) =>
     .map((s) => s.trim())
     .filter(Boolean)
 
+const castToLines = (cast) =>
+  (cast || []).map((c) => {
+    let line = c.name || ''
+    if (c.character) line += ` as ${c.character}`
+    if (c.role) line += ` (${c.role})`
+    return line
+  })
+
+const parseCastLine = (line) => {
+  const m = line.match(/^\s*(.+?)(?:\s+as\s+(.+?))?(?:\s*\(([^)]+)\))?\s*$/)
+  if (!m || !m[1]) return null
+  return { name: m[1], character: m[2] || undefined, role: m[3] || undefined }
+}
+
 export default function ItemDrawer({ item, onClose }) {
   const queryClient = useQueryClient()
   const allItems = useMemo(() => queryClient.getQueryData(['items']) || [], [queryClient])
@@ -26,6 +40,10 @@ export default function ItemDrawer({ item, onClose }) {
   const [notes, setNotes] = useState(item?.notes || '')
   const [tagsText, setTagsText] = useState((item?.tags || []).join(', '))
   const [authorsText, setAuthorsText] = useState((item?.authors || []).join(', '))
+  const [directorsText, setDirectorsText] = useState((item?.directors || []).join(', '))
+  const [studiosText, setStudiosText] = useState((item?.studios || []).join(', '))
+  const [publisherText, setPublisherText] = useState(item?.publisher || '')
+  const [castText, setCastText] = useState(castToLines(item?.cast).join('\n'))
   const [posterUrl, setPosterUrl] = useState(item?.posterUrl || '')
   const [rating, setRating] = useState(
     item?.externalRating != null
@@ -40,6 +58,10 @@ export default function ItemDrawer({ item, onClose }) {
     setNotes(item.notes || '')
     setTagsText((item.tags || []).join(', '))
     setAuthorsText((item.authors || []).join(', '))
+    setDirectorsText((item.directors || []).join(', '))
+    setStudiosText((item.studios || []).join(', '))
+    setPublisherText(item.publisher || '')
+    setCastText(castToLines(item.cast).join('\n'))
     setPosterUrl(item.posterUrl || '')
     setRating(
       item.externalRating != null
@@ -81,6 +103,20 @@ export default function ItemDrawer({ item, onClose }) {
     }
     return opts
   }, [search.data, posterUrl, item?.source])
+
+  useEffect(() => {
+    if (castText || !item || (item.cast || []).length) return
+    const results = search.data?.results || []
+    const match =
+      results.find(
+        (r) =>
+          (item.source === 'manual' || r.source === item.source) &&
+          r.title.toLowerCase() === item.title.toLowerCase()
+      ) ||
+      results.find((r) => r.title.toLowerCase() === item.title.toLowerCase())
+    const cast = match?.cast || match?.alternates?.find((a) => a.cast?.length)?.cast
+    if (cast?.length) setCastText(castToLines(cast).join('\n'))
+  }, [search.data, item, castText])
 
   const ratingOptions = useMemo(() => {
     const opts = []
@@ -207,6 +243,29 @@ export default function ItemDrawer({ item, onClose }) {
                       ))}
                     </div>
                   )}
+                  {(item.directors || []).length > 0 && (
+                    <div className="flex flex-wrap gap-1.5">
+                      {item.directors.map((d) => (
+                        <span key={d} className="chip chip-accent">
+                          {d}
+                        </span>
+                      ))}
+                    </div>
+                  )}
+                  {(item.studios || []).length > 0 && (
+                    <div className="flex flex-wrap gap-1.5">
+                      {item.studios.map((s) => (
+                        <span key={s} className="chip">
+                          {s}
+                        </span>
+                      ))}
+                    </div>
+                  )}
+                  {item.publisher && (
+                    <div className="flex flex-wrap gap-1.5">
+                      <span className="chip">{item.publisher}</span>
+                    </div>
+                  )}
                 </div>
               </div>
 
@@ -257,6 +316,65 @@ export default function ItemDrawer({ item, onClose }) {
                       value={authorsText}
                       onChange={(e) => setAuthorsText(e.target.value)}
                       placeholder="Frank Herbert"
+                    />
+                  </div>
+                )}
+
+                {item.type !== 'book' && item.type !== 'manga' && (
+                  <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                    <div>
+                      <label className="label" htmlFor="d-directors">
+                        Directors
+                      </label>
+                      <input
+                        id="d-directors"
+                        className="input"
+                        value={directorsText}
+                        onChange={(e) => setDirectorsText(e.target.value)}
+                        placeholder="Denis Villeneuve"
+                      />
+                    </div>
+                    <div>
+                      <label className="label" htmlFor="d-studios">
+                        Studios
+                      </label>
+                      <input
+                        id="d-studios"
+                        className="input"
+                        value={studiosText}
+                        onChange={(e) => setStudiosText(e.target.value)}
+                        placeholder="Warner Bros."
+                      />
+                    </div>
+                  </div>
+                )}
+
+                {(item.type === 'book' || item.type === 'manga') && (
+                  <div>
+                    <label className="label" htmlFor="d-publisher">
+                      Publisher
+                    </label>
+                    <input
+                      id="d-publisher"
+                      className="input"
+                      value={publisherText}
+                      onChange={(e) => setPublisherText(e.target.value)}
+                      placeholder="Penguin Books"
+                    />
+                  </div>
+                )}
+
+                {item.type !== 'book' && item.type !== 'manga' && (
+                  <div>
+                    <label className="label" htmlFor="d-cast">
+                      Cast — one per line: Name as Character (Role)
+                    </label>
+                    <textarea
+                      id="d-cast"
+                      className="input min-h-28 resize-y font-mono text-xs"
+                      value={castText}
+                      onChange={(e) => setCastText(e.target.value)}
+                      placeholder={'Atsumi Tanezaki as Frieren (MAIN)\nKana Ichinose as Fern (MAIN)'}
                     />
                   </div>
                 )}
@@ -330,10 +448,29 @@ export default function ItemDrawer({ item, onClose }) {
                     save.mutate({
                       notes: notes.trim(),
                       tags: splitList(tagsText),
-                      authors:
+                      authors: splitList(authorsText),
+                      directors:
                         item.type === 'book' || item.type === 'manga'
-                          ? splitList(authorsText)
+                          ? undefined
+                          : splitList(directorsText),
+                      studios:
+                        item.type === 'book' || item.type === 'manga'
+                          ? undefined
+                          : splitList(studiosText),
+                      publisher:
+                        item.type === 'book' || item.type === 'manga'
+                          ? publisherText.trim() || undefined
                           : undefined,
+                      cast:
+                        item.type === 'book' || item.type === 'manga'
+                          ? undefined
+                          : castText
+                              .split('\n')
+                              .map((l) => l.trim())
+                              .filter(Boolean)
+                              .map(parseCastLine)
+                              .filter(Boolean)
+                              .map((c, i) => ({ ...c, order: i })),
                       posterUrl: posterUrl || null,
                       externalRating: rating?.value ?? null,
                       ratingSource: rating?.source || 'manual',

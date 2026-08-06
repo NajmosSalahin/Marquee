@@ -17,11 +17,11 @@ export const itemValidation = [
     .withMessage('Invalid status'),
   body('ratingSource')
     .optional()
-    .isIn(['tmdb', 'omdb', 'jikan', 'anilist', 'googlebooks', 'openlibrary', 'manual'])
+    .isIn(['tmdb', 'omdb', 'jikan', 'anilist', 'kitsu', 'googlebooks', 'openlibrary', 'manual'])
     .withMessage('Invalid rating source'),
   body('source')
     .optional()
-    .isIn(['tmdb', 'omdb', 'jikan', 'anilist', 'googlebooks', 'openlibrary', 'manual'])
+    .isIn(['tmdb', 'omdb', 'jikan', 'anilist', 'kitsu', 'googlebooks', 'openlibrary', 'manual'])
     .withMessage('Invalid source'),
   body('releaseYear')
     .optional({ nullable: true })
@@ -33,6 +33,15 @@ export const itemValidation = [
     .withMessage('Rating must be 0–10'),
   body('genres').optional().isArray().withMessage('Genres must be a list'),
   body('authors').optional().isArray().withMessage('Authors must be a list'),
+  body('directors').optional().isArray().withMessage('Directors must be a list'),
+  body('studios').optional().isArray().withMessage('Studios must be a list'),
+  body('publisher').optional().isString().withMessage('Publisher must be text'),
+  body('cast')
+    .optional()
+    .isArray()
+    .withMessage('Cast must be a list')
+    .custom((arr) => arr.every((c) => c && typeof c.name === 'string'))
+    .withMessage('Each cast entry needs a name'),
   body('tags').optional().isArray().withMessage('Tags must be a list'),
 ]
 

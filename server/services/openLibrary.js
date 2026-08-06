@@ -2,7 +2,7 @@ export async function searchOpenLibrary(_type, query, opts = {}) {
   const url = new URL('https://openlibrary.org/search.json')
   url.searchParams.set('q', opts.author ? `author:${query}` : query)
   url.searchParams.set('limit', '6')
-  url.searchParams.set('fields', 'key,title,first_publish_year,author_name,cover_i,subject')
+  url.searchParams.set('fields', 'key,title,first_publish_year,author_name,cover_i,subject,publisher')
 
   const res = await fetch(url)
   if (!res.ok) throw new Error(`Open Library responded ${res.status}`)
@@ -15,6 +15,7 @@ export async function searchOpenLibrary(_type, query, opts = {}) {
     year: d.first_publish_year ? String(d.first_publish_year) : '',
     overview: '',
     authors: (d.author_name || []).slice(0, 5),
+    publisher: (d.publisher || [])[0] || '',
     genres: (d.subject || []).slice(0, 5).map((s) => s.split(/[,(]/)[0].trim()).filter(Boolean),
     rating: null,
     posters: [

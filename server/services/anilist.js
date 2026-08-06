@@ -1,5 +1,16 @@
 const ENDPOINT = 'https://graphql.anilist.co'
 
+const CHARACTERS = `
+      characters(sort: FAVOURITES_DESC, perPage: 10) {
+        edges {
+          role
+          va: voiceActors(language: JAPANESE) { id name { full } }
+          node { name { full } }
+        }
+      }
+      staff(sort: FAVOURITES_DESC) { edges { role node { name { full } } } }
+      studios { nodes { name } }`
+
 const QUERY = `
 query ($search: String, $type: MediaType) {
   Page(page: 1, perPage: 6) {
@@ -11,7 +22,7 @@ query ($search: String, $type: MediaType) {
       description(asHtml: false)
       genres
       startDate { year }
-      staff(sort: FAVOURITES_DESC) { nodes { name { full } } }
+      ${CHARACTERS}
     }
   }
 }`
@@ -32,12 +43,15 @@ query ($search: String) {
           description(asHtml: false)
           genres
           startDate { year }
-          staff(sort: FAVOURITES_DESC) { nodes { name { full } } }
+          ${CHARACTERS}
         }
       }
     }
   }
 }`
+
+const DIRECTOR_RE = /^Director$/
+const WRITER_RE = /\b(Story|Script|Screenplay|Writer|Author|Art)\b/i
 
 function stripMarkup(text) {
   return (text || '')
@@ -46,14 +60,40 @@ function stripMarkup(text) {
     .trim()
 }
 
-function mapMedia(m) {
+function mapMedia(m, type) {
+  const staff = m.staff?.edges || []
+  const directors = staff
+    .filter((e) => e.role && DIRECTOR_RE.test(e.role))
+    .map((e) => e?.node?.name?.full)
+    .filter(Boolean)
+  const writers = staff
+    .filter((e) => e.role && WRITER_RE.test(e.role))
+    .map((e) => e?.node?.name?.full)
+    .filter(Boolean)
+    .filter((n) => !directors.includes(n))
+  const cast =
+    type === 'anime'
+      ? (m.characters?.edges || []).slice(0, 10).map((e, i) => {
+          const character = e?.node?.name?.full
+          const va = e?.va?.[0]?.name?.full
+          return {
+            name: va || character,
+            character: va ? character : undefined,
+            role: e?.role || undefined,
+            order: i,
+          }
+        })
+      : []
   return {
     source: 'anilist',
     externalId: String(m.id),
     title: (m.title?.english || m.title?.romaji || '').trim(),
     year: m.startDate?.year ? String(m.startDate.year) : '',
     overview: stripMarkup(m.description),
-    authors: (m.staff?.nodes || []).slice(0, 5).map((n) => n.name?.full).filter(Boolean),
+    authors: [...new Set(writers.slice(0, 5))],
+    directors: [...new Set(directors.slice(0, 3))],
+    studios: (m.studios?.nodes || []).map((s) => s.name).slice(0, 5),
+    cast,
     genres: m.genres || [],
     rating: m.averageScore ? Number((m.averageScore / 10).toFixed(1)) : null,
     posters: [m.coverImage?.extraLarge, m.coverImage?.large, m.coverImage?.medium]
@@ -77,7 +117,7 @@ async function searchMangaByAuthor(query) {
   const staff = data?.data?.Page?.staff || []
   for (const person of staff) {
     const media = (person.staffMedia?.nodes || []).filter((m) => m.format !== 'NOVEL')
-    if (media.length > 0) return media.map(mapMedia)
+    if (media.length > 0) return media.map((m) => mapMedia(m, 'manga'))
   }
   return []
 }
@@ -87,5 +127,5 @@ export async function searchAnilist(type, query, opts = {}) {
 
   const mediaType = type === 'manga' ? 'MANGA' : 'ANIME'
   const data = await gql(QUERY, { search: query, type: mediaType })
-  return (data?.data?.Page?.media || []).map(mapMedia)
+  return (data?.data?.Page?.media || []).map((m) => mapMedia(m, type))
 }

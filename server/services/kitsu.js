@@ -1,4 +1,5 @@
 const AUTHOR_ROLES = new Set(['Story', 'Art', 'Story & Art', 'Author', 'Original Creator'])
+const DIRECTOR_ROLES = new Set(['Director'])
 
 async function fetchWithRetry(url, attempts = 2) {
   for (let i = 0; i < attempts; i++) {
@@ -53,13 +54,15 @@ export async function searchKitsu(type, query) {
       .filter(Boolean)
       .map((url) => ({ url, lang: null, votes: 0 }))
     const authors = []
+    const directors = []
     for (const rel of item.relationships?.staff?.data || []) {
       const personId = staffPersonById.get(rel.id)
       if (!personId) continue
       const role = staffRoleById.get(rel.id) || ''
-      if (!AUTHOR_ROLES.has(role)) continue
       const name = peopleById.get(personId)
-      if (name && !authors.includes(name)) authors.push(name)
+      if (!name) continue
+      if (AUTHOR_ROLES.has(role) && !authors.includes(name)) authors.push(name)
+      if (DIRECTOR_ROLES.has(role) && !directors.includes(name)) directors.push(name)
     }
     return {
       source: 'kitsu',
@@ -68,6 +71,7 @@ export async function searchKitsu(type, query) {
       year,
       overview: (a.synopsis || '').trim(),
       authors: authors.slice(0, 5),
+      directors: directors.slice(0, 3),
       genres: [...genreTitles].slice(0, 6),
       rating,
       posters,

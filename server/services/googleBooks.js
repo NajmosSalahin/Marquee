@@ -37,6 +37,7 @@ export async function searchGoogleBooks(_type, query, opts = {}) {
       year,
       overview: (v.description || '').trim(),
       authors: (v.authors || []).slice(0, 5),
+      publisher: v.publisher || '',
       genres: (v.categories || []).map((c) => c.split(' / ')[0].trim()),
       rating,
       posters: [thumb]

@@ -9,10 +9,21 @@ const watchlistItemSchema = new mongoose.Schema({
   releaseYear: Number,
   genres: [String],
   authors: [String],
+  directors: [String],
+  studios: [String],
+  publisher: String,
+  cast: [
+    {
+      name: { type: String, default: '' },
+      character: String,
+      role: String,
+      order: Number,
+    },
+  ],
   externalRating: Number,
   ratingSource: {
     type: String,
-    enum: ['tmdb', 'omdb', 'jikan', 'anilist', 'googlebooks', 'openlibrary', 'manual'],
+    enum: ['tmdb', 'omdb', 'jikan', 'anilist', 'kitsu', 'googlebooks', 'openlibrary', 'manual'],
     default: 'manual',
   },
   status: {
@@ -24,7 +35,7 @@ const watchlistItemSchema = new mongoose.Schema({
   tags: [String],
   source: {
     type: String,
-    enum: ['tmdb', 'omdb', 'jikan', 'anilist', 'googlebooks', 'openlibrary', 'manual'],
+    enum: ['tmdb', 'omdb', 'jikan', 'anilist', 'kitsu', 'googlebooks', 'openlibrary', 'manual'],
     default: 'manual',
   },
   externalId: String,
