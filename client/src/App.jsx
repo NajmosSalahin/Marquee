@@ -7,6 +7,7 @@ import ResetPasswordPage from './pages/ResetPasswordPage.jsx'
 import VerifyEmailPage from './pages/VerifyEmailPage.jsx'
 import DashboardPage from './pages/DashboardPage.jsx'
 import WatchlistPage from './pages/WatchlistPage.jsx'
+import LibraryPage from './pages/LibraryPage.jsx'
 import LandingPage from './pages/LandingPage.jsx'
 import AppShell from './components/layout/AppShell.jsx'
 import BootSkeleton from './components/ui/BootSkeleton.jsx'
@@ -57,6 +58,7 @@ export default function App() {
       >
         <Route path="/dashboard" element={<DashboardPage />} />
         <Route path="/watchlist" element={<WatchlistPage />} />
+        <Route path="/library" element={<LibraryPage />} />
       </Route>
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>

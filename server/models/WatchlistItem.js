@@ -2,16 +2,28 @@ import mongoose from 'mongoose'
 
 const watchlistItemSchema = new mongoose.Schema({
   userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true, index: true },
-  type: { type: String, enum: ['movie', 'tv', 'anime'], required: true },
+  type: { type: String, enum: ['movie', 'tv', 'anime', 'book', 'manga'], required: true },
   title: { type: String, required: true, trim: true },
   posterUrl: String,
   overview: String,
   releaseYear: Number,
   genres: [String],
+  authors: [String],
+  directors: [String],
+  studios: [String],
+  publisher: String,
+  cast: [
+    {
+      name: { type: String, default: '' },
+      character: String,
+      role: String,
+      order: Number,
+    },
+  ],
   externalRating: Number,
   ratingSource: {
     type: String,
-    enum: ['tmdb', 'omdb', 'jikan', 'anilist', 'manual'],
+    enum: ['tmdb', 'omdb', 'jikan', 'anilist', 'kitsu', 'googlebooks', 'openlibrary', 'manual'],
     default: 'manual',
   },
   status: {
@@ -21,7 +33,11 @@ const watchlistItemSchema = new mongoose.Schema({
   },
   notes: String,
   tags: [String],
-  source: { type: String, enum: ['tmdb', 'omdb', 'jikan', 'anilist', 'manual'], default: 'manual' },
+  source: {
+    type: String,
+    enum: ['tmdb', 'omdb', 'jikan', 'anilist', 'kitsu', 'googlebooks', 'openlibrary', 'manual'],
+    default: 'manual',
+  },
   externalId: String,
   order: { type: Number, default: 0 },
   dateAdded: { type: Date, default: Date.now },

@@ -15,7 +15,7 @@ import {
 import { SortableContext, useSortable, verticalListSortingStrategy } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
 import ItemCard from './ItemCard.jsx'
-import { STATUSES } from '../../lib/constants.js'
+import { STATUSES, STATUS_LABELS } from '../../lib/constants.js'
 import { reorderItems } from '../../api/items.js'
 
 const collisionDetectionPriority = (args) => {
@@ -49,7 +49,7 @@ function SortableCard({ item, onItemClick, justDragged }) {
   )
 }
 
-function Column({ status, items, onItemClick, empty, justDragged }) {
+function Column({ status, label, items, onItemClick, empty, justDragged }) {
   const { setNodeRef, isOver } = useDroppable({ id: status.id })
   return (
     <section
@@ -57,7 +57,7 @@ function Column({ status, items, onItemClick, empty, justDragged }) {
       className={`flex w-56 shrink-0 flex-col rounded-xl border ${isOver ? 'border-accent/60 bg-accent/5' : 'border-line bg-surface/50'} transition-colors duration-150`}
     >
       <header className="flex items-center justify-between px-3 py-2.5">
-        <h3 className="text-xs font-bold uppercase tracking-wider text-muted">{status.label}</h3>
+        <h3 className="text-xs font-bold uppercase tracking-wider text-muted">{label}</h3>
         <span className="font-mono text-xs text-muted/70">{items.length}</span>
       </header>
       <div
@@ -84,7 +84,7 @@ function Column({ status, items, onItemClick, empty, justDragged }) {
   )
 }
 
-export default function BoardView({ itemsByStatus, onItemClick }) {
+export default function BoardView({ itemsByStatus, onItemClick, statusLabels = STATUS_LABELS }) {
   const queryClient = useQueryClient()
   const [activeItem, setActiveItem] = useState(null)
   const justDragged = useRef(false)
@@ -190,11 +190,12 @@ export default function BoardView({ itemsByStatus, onItemClick }) {
       onDragEnd={handleDragEnd}
       onDragCancel={handleDragCancel}
     >
-      <div className="flex gap-4 overflow-x-auto pb-4" aria-label="Watchlist board">
+      <div className="flex gap-4 overflow-x-auto pb-4" aria-label="Board">
         {STATUSES.map((status) => (
           <Column
             key={status.id}
             status={status}
+            label={statusLabels[status.id] || status.label}
             items={itemsByStatus[status.id] || []}
             onItemClick={onItemClick}
             empty="Drag titles here"

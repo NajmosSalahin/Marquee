@@ -1,6 +1,6 @@
 # Marquee.
 
-A personal watchlist for movies, TV, and anime — dark, cinematic, and fast. Multi-user: every account keeps its own private collection, adding titles by searching two free APIs per category side by side (TMDB + OMDb for movies/TV, Jikan + AniList for anime) or typing them in manually.
+A personal watchlist for movies, TV, anime, books, and manga — dark, cinematic, and fast. Multi-user: every account keeps its own private collection, adding titles by searching two free APIs per category side by side (TMDB + OMDb for movies/TV, Jikan + AniList for anime & manga, Google Books + Open Library for books) or typing them in manually.
 
 Built with React 18 + Vite + Tailwind + TanStack Query on the client, Node/Express + MongoDB on the server.
 
@@ -12,8 +12,10 @@ Built with React 18 + Vite + Tailwind + TanStack Query on the client, Node/Expre
 | ---------------- | ----------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | TMDB             | Movies & TV search, posters                           | Register at [themoviedb.org](https://www.themoviedb.org/settings/api) → "Developer" → request an API key (free, instant). Take both the API key and the "API Read Access Token" from your settings. |
 | OMDb             | Movies & TV second source, IMDb/RT/Metacritic ratings | [omdbapi.com/apikey.aspx](https://www.omdbapi.com/apikey.aspx) — request by email, key arrives within the hour. Free tier: 1,000 requests/day.                                                      |
-| Jikan + AniList  | Anime (both sources)                                  | None — fully open, no keys.                                                                                                                                                                         |
+| Jikan + AniList  | Anime & manga (both sources)                        | None — fully open, no keys.                                                                                                                                                                                                                                        |
 | Brevo (optional) | Password reset + email verification                   | Free account at [brevo.com](https://www.brevo.com) → SMTP & API → API keys. Verify a sender email (Settings → Senders) and use that for `BREVO_FROM_EMAIL`.                                         |
+| Google Books     | Books                                               | Optional free key: Google Cloud Console → enable **Books API** → Credentials → API key. Keyless works but shares a global daily quota (can 429 during peak hours).                                            |
+| Open Library     | Books (second source)                               | None — fully open, no key.                                                                                                                                                                         |
 
 ### 2. MongoDB
 
@@ -33,6 +35,7 @@ JWT_SECRET=some-long-random-string
 TMDB_API_KEY=...
 TMDB_ACCESS_TOKEN=...
 OMDB_API_KEY=...
+GOOGLE_BOOKS_API_KEY=...          # optional — keyless books search shares a global quota
 BREVO_API_KEY=xkeysib-...          # optional
 BREVO_FROM_EMAIL=you@verified-sender.com  # must be verified in Brevo
 CLIENT_URL=http://localhost:5173
@@ -52,7 +55,8 @@ Open http://localhost:5173, register an account, and add your first title.
 
 ## Features
 
-- **Multi-source search** — every query fans out to two APIs server-side and shows the results side by side with source badges, so a title missing from one source still turns up. One flaky API never blanks the results.
+- **Multi-source search** — every query fans out to two APIs server-side and shows the results side by side with source badges, so a title missing from one source still turns up. One flaky API never blanks the results. Books & manga also support **search by author name** (Google Books `inauthor:` + Open Library `author:`; manga via Jikan people + AniList staff).
+- **Authors** — books and manga show their writers on cards, in the list view, and in the detail drawer; editable when adding or later.
 - **Poster + rating pickers** — the add form shows every poster found across both sources (TMDB's full image set included) and every rating, swappable independently of the card you clicked.
 - **Three views** — Board (drag cards between statuses), Grid (poster wall), List (sortable table).
 - **Detail drawer** — full synopsis, editable status/notes/tags, and the same poster/rating pickers so you can swap to a better option later.

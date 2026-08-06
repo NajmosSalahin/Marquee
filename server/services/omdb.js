@@ -26,6 +26,10 @@ export async function searchOmdb(type, query) {
       const d = detail && detail.Response !== 'False' ? detail : r
       const ratings = (d.Ratings || []).reduce((acc, x) => ({ ...acc, [x.Source]: x.Value }), {})
       const imdb = parseScore(d.imdbRating)
+      const splitCredits = (v) =>
+        v && v !== 'N/A'
+          ? v.split(',').map((s) => s.trim()).filter(Boolean)
+          : []
       return {
         source: 'omdb',
         externalId: d.imdbID || r.imdbID,
@@ -36,6 +40,15 @@ export async function searchOmdb(type, query) {
           .split(',')
           .map((s) => s.trim())
           .filter(Boolean),
+        authors: splitCredits(d.Writer),
+        directors: splitCredits(d.Director),
+        studios: splitCredits(d.Studio),
+        cast: splitCredits(d.Actors).map((name, i) => ({
+          name,
+          character: undefined,
+          role: undefined,
+          order: i,
+        })),
         rating: imdb,
         extraRatings: [
           ratings['Rotten Tomatoes']

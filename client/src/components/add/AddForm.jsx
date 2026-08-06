@@ -3,7 +3,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { toast } from 'sonner'
 import { AlertTriangle, Loader2 } from 'lucide-react'
 import { createItem } from '../../api/items.js'
-import { STATUSES, STATUS_LABELS, TYPE_LABELS } from '../../lib/constants.js'
+import { STATUSES, TYPE_LABELS, statusLabel } from '../../lib/constants.js'
 import Poster from '../ui/Poster.jsx'
 import PosterPicker from './PosterPicker.jsx'
 import RatingPicker from './RatingPicker.jsx'
@@ -51,6 +51,10 @@ export default function AddForm({ type, result, onDone }) {
   const [year, setYear] = useState(result?.year || '')
   const [overview, setOverview] = useState(result?.overview || '')
   const [genresText, setGenresText] = useState((result?.genres || []).join(', '))
+  const [authorsText, setAuthorsText] = useState((result?.authors || []).join(', '))
+  const [directorsText, setDirectorsText] = useState((result?.directors || []).join(', '))
+  const [studiosText, setStudiosText] = useState((result?.studios || []).join(', '))
+  const [publisherText, setPublisherText] = useState(result?.publisher || '')
   const [posterUrl, setPosterUrl] = useState(initialPoster)
   const [rating, setRating] = useState(initialRating)
   const [status, setStatus] = useState('plan_to_watch')
@@ -85,6 +89,12 @@ export default function AddForm({ type, result, onDone }) {
           releaseYear: year ? Number(year) : undefined,
           overview: overview.trim(),
           genres: splitList(genresText),
+          authors: splitList(authorsText),
+          directors: type === 'book' || type === 'manga' ? undefined : splitList(directorsText),
+          studios: type === 'book' || type === 'manga' ? undefined : splitList(studiosText),
+          publisher:
+            type === 'book' || type === 'manga' ? publisherText.trim() || undefined : undefined,
+          cast: type === 'book' || type === 'manga' ? undefined : (result?.cast || []),
           posterUrl: posterUrl || undefined,
           externalRating: rating?.value,
           ratingSource: rating?.source || 'manual',
@@ -101,7 +111,7 @@ export default function AddForm({ type, result, onDone }) {
           <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0 text-accent" aria-hidden="true" />
           <p>
             <span className="font-semibold">{duplicate.title}</span> is already on your watchlist
-            {duplicate.status !== 'plan_to_watch' ? ` (${STATUS_LABELS[duplicate.status]})` : ''} —
+            {duplicate.status !== 'plan_to_watch' ? ` (${statusLabel(duplicate.type, duplicate.status)})` : ''} —
             adding it anyway.
           </p>
         </div>
@@ -150,7 +160,7 @@ export default function AddForm({ type, result, onDone }) {
               >
                 {STATUSES.map((s) => (
                   <option key={s.id} value={s.id}>
-                    {s.label}
+                    {statusLabel(type, s.id)}
                   </option>
                 ))}
               </select>
@@ -158,6 +168,65 @@ export default function AddForm({ type, result, onDone }) {
           </div>
         </div>
       </div>
+
+      {(type === 'book' || type === 'manga') && (
+        <div>
+          <label className="label" htmlFor="af-authors">
+            Authors
+          </label>
+          <input
+            id="af-authors"
+            className="input"
+            value={authorsText}
+            onChange={(e) => setAuthorsText(e.target.value)}
+            placeholder="Frank Herbert"
+          />
+        </div>
+      )}
+
+      {type !== 'book' && type !== 'manga' && (
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+          <div>
+            <label className="label" htmlFor="af-directors">
+              Directors
+            </label>
+            <input
+              id="af-directors"
+              className="input"
+              value={directorsText}
+              onChange={(e) => setDirectorsText(e.target.value)}
+              placeholder="Denis Villeneuve"
+            />
+          </div>
+          <div>
+            <label className="label" htmlFor="af-studios">
+              Studios
+            </label>
+            <input
+              id="af-studios"
+              className="input"
+              value={studiosText}
+              onChange={(e) => setStudiosText(e.target.value)}
+              placeholder="Warner Bros."
+            />
+          </div>
+        </div>
+      )}
+
+      {(type === 'book' || type === 'manga') && (
+        <div>
+          <label className="label" htmlFor="af-publisher">
+            Publisher
+          </label>
+          <input
+            id="af-publisher"
+            className="input"
+            value={publisherText}
+            onChange={(e) => setPublisherText(e.target.value)}
+            placeholder="Penguin Books"
+          />
+        </div>
+      )}
 
       <div>
         <label className="label" htmlFor="af-genres">

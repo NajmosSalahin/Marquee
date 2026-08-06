@@ -24,13 +24,18 @@ export async function searchTmdb(type, query) {
 
   const items = await Promise.all(
     results.map(async (r) => {
-      const [detail, images] = await Promise.allSettled([
+      const [detail, images, credits] = await Promise.allSettled([
         fetchJson(`/${mediaType}/${r.id}`, { language: 'en-US' }),
         fetchJson(`/${mediaType}/${r.id}/images`, {
           include_image_language: 'null,en,hi,ja,ko,zh,fr,es,de,it,pt,ar,ru',
         }),
+        fetchJson(
+          `/${mediaType}/${r.id}/${mediaType === 'movie' ? 'credits' : 'aggregate_credits'}`,
+          { language: 'en-US' }
+        ),
       ])
       const d = detail.status === 'fulfilled' ? detail.value : r
+      const c = credits.status === 'fulfilled' ? credits.value : null
       const posters =
         images.status === 'fulfilled'
           ? images.value.posters
@@ -46,6 +51,24 @@ export async function searchTmdb(type, query) {
       if (!posters.length && r.poster_path) {
         posters.push({ url: `${POSTER_BASE}${r.poster_path}`, lang: null, votes: 0 })
       }
+      const crew = (c?.crew || []).filter((m) => m.job && m.job !== '')
+      const directors = crew
+        .filter((m) => m.job === 'Director')
+        .map((m) => m.name)
+        .slice(0, 3)
+      const writers = crew
+        .filter((m) => m.job === 'Writer' || m.job === 'Screenplay' || m.job === 'Story')
+        .map((m) => m.name)
+        .slice(0, 5)
+      const cast = (c?.cast || [])
+        .slice(0, 10)
+        .map((m, i) => ({
+          name: m.name,
+          character: m.roles?.[0]?.character || m.character || undefined,
+          role: undefined,
+          order: m.order ?? i,
+        }))
+        .filter((m) => m.name)
       return {
         source: 'tmdb',
         externalId: String(r.id),
@@ -53,6 +76,10 @@ export async function searchTmdb(type, query) {
         year: (d.release_date || d.first_air_date || '').slice(0, 4),
         overview: (d.overview || r.overview || '').trim(),
         genres: (d.genres || []).map((g) => g.name),
+        authors: writers,
+        directors,
+        studios: (d.production_companies || []).map((s) => s.name).slice(0, 5),
+        cast,
         rating: d.vote_average || r.vote_average || null,
         posters,
       }

@@ -122,6 +122,12 @@ img {
     @apply inline-flex items-center gap-1 rounded-full border border-line bg-surface px-2.5 py-0.5 text-xs font-medium text-muted;
   }
 
+  .chip-accent {
+    border-color: color-mix(in srgb, var(--accent) 40%, transparent);
+    background: color-mix(in srgb, var(--accent) 10%, transparent);
+    color: var(--accent);
+  }
+
   .eyebrow {
     @apply font-mono text-xs font-semibold uppercase tracking-[0.3em] text-accent;
   }

@@ -20,6 +20,8 @@ services:
         sync: false
       - key: OMDB_API_KEY
         sync: false
+      - key: GOOGLE_BOOKS_API_KEY
+        sync: false
       - key: BREVO_API_KEY
         sync: false
       - key: BREVO_FROM_EMAIL

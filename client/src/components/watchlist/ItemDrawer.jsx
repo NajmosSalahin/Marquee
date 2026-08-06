@@ -2,10 +2,10 @@ import { useEffect, useMemo, useState } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { toast } from 'sonner'
-import { CalendarDays, Loader2, Trash2, X } from 'lucide-react'
+import { CalendarDays, Loader2, Trash2, X, BookOpen } from 'lucide-react'
 import { deleteItem, updateItem } from '../../api/items.js'
 import { searchTitle } from '../../api/search.js'
-import { SOURCE_LABELS, STATUSES, TYPE_LABELS } from '../../lib/constants.js'
+import { SOURCE_LABELS, STATUSES, TYPE_LABELS, statusLabel } from '../../lib/constants.js'
 import { formatDate } from '../../lib/format.js'
 import Poster from '../ui/Poster.jsx'
 import SourceBadge from '../ui/SourceBadge.jsx'
@@ -18,6 +18,20 @@ const splitList = (text) =>
     .map((s) => s.trim())
     .filter(Boolean)
 
+const castToLines = (cast) =>
+  (cast || []).map((c) => {
+    let line = c.name || ''
+    if (c.character) line += ` as ${c.character}`
+    if (c.role) line += ` (${c.role})`
+    return line
+  })
+
+const parseCastLine = (line) => {
+  const m = line.match(/^\s*(.+?)(?:\s+as\s+(.+?))?(?:\s*\(([^)]+)\))?\s*$/)
+  if (!m || !m[1]) return null
+  return { name: m[1], character: m[2] || undefined, role: m[3] || undefined }
+}
+
 export default function ItemDrawer({ item, onClose }) {
   const queryClient = useQueryClient()
   const allItems = useMemo(() => queryClient.getQueryData(['items']) || [], [queryClient])
@@ -25,6 +39,11 @@ export default function ItemDrawer({ item, onClose }) {
   const [status, setStatus] = useState(item?.status || 'plan_to_watch')
   const [notes, setNotes] = useState(item?.notes || '')
   const [tagsText, setTagsText] = useState((item?.tags || []).join(', '))
+  const [authorsText, setAuthorsText] = useState((item?.authors || []).join(', '))
+  const [directorsText, setDirectorsText] = useState((item?.directors || []).join(', '))
+  const [studiosText, setStudiosText] = useState((item?.studios || []).join(', '))
+  const [publisherText, setPublisherText] = useState(item?.publisher || '')
+  const [castText, setCastText] = useState(castToLines(item?.cast).join('\n'))
   const [posterUrl, setPosterUrl] = useState(item?.posterUrl || '')
   const [rating, setRating] = useState(
     item?.externalRating != null
@@ -38,6 +57,11 @@ export default function ItemDrawer({ item, onClose }) {
     setStatus(item.status || 'plan_to_watch')
     setNotes(item.notes || '')
     setTagsText((item.tags || []).join(', '))
+    setAuthorsText((item.authors || []).join(', '))
+    setDirectorsText((item.directors || []).join(', '))
+    setStudiosText((item.studios || []).join(', '))
+    setPublisherText(item.publisher || '')
+    setCastText(castToLines(item.cast).join('\n'))
     setPosterUrl(item.posterUrl || '')
     setRating(
       item.externalRating != null
@@ -80,6 +104,20 @@ export default function ItemDrawer({ item, onClose }) {
     return opts
   }, [search.data, posterUrl, item?.source])
 
+  useEffect(() => {
+    if (castText || !item || (item.cast || []).length) return
+    const results = search.data?.results || []
+    const match =
+      results.find(
+        (r) =>
+          (item.source === 'manual' || r.source === item.source) &&
+          r.title.toLowerCase() === item.title.toLowerCase()
+      ) ||
+      results.find((r) => r.title.toLowerCase() === item.title.toLowerCase())
+    const cast = match?.cast || match?.alternates?.find((a) => a.cast?.length)?.cast
+    if (cast?.length) setCastText(castToLines(cast).join('\n'))
+  }, [search.data, item, castText])
+
   const ratingOptions = useMemo(() => {
     const opts = []
     if (item?.externalRating != null)
@@ -112,7 +150,7 @@ export default function ItemDrawer({ item, onClose }) {
   const remove = useMutation({
     mutationFn: () => deleteItem(item._id),
     onSuccess: () => {
-      toast.success('Removed from Watchlist')
+      toast.success('Removed from your collection')
       queryClient.invalidateQueries({ queryKey: ['items'] })
       onClose()
     },
@@ -158,6 +196,9 @@ export default function ItemDrawer({ item, onClose }) {
                     src={item.posterUrl}
                     alt={item.title}
                     className="rounded-lg shadow-card"
+                    icon={
+                      item.type === 'book' || item.type === 'manga' ? BookOpen : undefined
+                    }
                   />
                 </div>
                 <div className="min-w-0 flex-1 space-y-2.5">
@@ -193,6 +234,38 @@ export default function ItemDrawer({ item, onClose }) {
                       ))}
                     </div>
                   )}
+                  {(item.authors || []).length > 0 && (
+                    <div className="flex flex-wrap gap-1.5">
+                      {item.authors.map((a) => (
+                        <span key={a} className="chip">
+                          {a}
+                        </span>
+                      ))}
+                    </div>
+                  )}
+                  {(item.directors || []).length > 0 && (
+                    <div className="flex flex-wrap gap-1.5">
+                      {item.directors.map((d) => (
+                        <span key={d} className="chip chip-accent">
+                          {d}
+                        </span>
+                      ))}
+                    </div>
+                  )}
+                  {(item.studios || []).length > 0 && (
+                    <div className="flex flex-wrap gap-1.5">
+                      {item.studios.map((s) => (
+                        <span key={s} className="chip">
+                          {s}
+                        </span>
+                      ))}
+                    </div>
+                  )}
+                  {item.publisher && (
+                    <div className="flex flex-wrap gap-1.5">
+                      <span className="chip">{item.publisher}</span>
+                    </div>
+                  )}
                 </div>
               </div>
 
@@ -216,7 +289,7 @@ export default function ItemDrawer({ item, onClose }) {
                   >
                     {STATUSES.map((s) => (
                       <option key={s.id} value={s.id}>
-                        {s.label}
+                        {statusLabel(item.type, s.id)}
                       </option>
                     ))}
                   </select>
@@ -231,6 +304,80 @@ export default function ItemDrawer({ item, onClose }) {
                   <span className="label">Rating</span>
                   <RatingPicker options={ratingOptions} value={rating} onChange={setRating} />
                 </div>
+
+                {(item.type === 'book' || item.type === 'manga') && (
+                  <div>
+                    <label className="label" htmlFor="d-authors">
+                      Authors
+                    </label>
+                    <input
+                      id="d-authors"
+                      className="input"
+                      value={authorsText}
+                      onChange={(e) => setAuthorsText(e.target.value)}
+                      placeholder="Frank Herbert"
+                    />
+                  </div>
+                )}
+
+                {item.type !== 'book' && item.type !== 'manga' && (
+                  <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                    <div>
+                      <label className="label" htmlFor="d-directors">
+                        Directors
+                      </label>
+                      <input
+                        id="d-directors"
+                        className="input"
+                        value={directorsText}
+                        onChange={(e) => setDirectorsText(e.target.value)}
+                        placeholder="Denis Villeneuve"
+                      />
+                    </div>
+                    <div>
+                      <label className="label" htmlFor="d-studios">
+                        Studios
+                      </label>
+                      <input
+                        id="d-studios"
+                        className="input"
+                        value={studiosText}
+                        onChange={(e) => setStudiosText(e.target.value)}
+                        placeholder="Warner Bros."
+                      />
+                    </div>
+                  </div>
+                )}
+
+                {(item.type === 'book' || item.type === 'manga') && (
+                  <div>
+                    <label className="label" htmlFor="d-publisher">
+                      Publisher
+                    </label>
+                    <input
+                      id="d-publisher"
+                      className="input"
+                      value={publisherText}
+                      onChange={(e) => setPublisherText(e.target.value)}
+                      placeholder="Penguin Books"
+                    />
+                  </div>
+                )}
+
+                {item.type !== 'book' && item.type !== 'manga' && (
+                  <div>
+                    <label className="label" htmlFor="d-cast">
+                      Cast — one per line: Name as Character (Role)
+                    </label>
+                    <textarea
+                      id="d-cast"
+                      className="input min-h-28 resize-y font-mono text-xs"
+                      value={castText}
+                      onChange={(e) => setCastText(e.target.value)}
+                      placeholder={'Atsumi Tanezaki as Frieren (MAIN)\nKana Ichinose as Fern (MAIN)'}
+                    />
+                  </div>
+                )}
 
                 <div>
                   <label className="label" htmlFor="d-tags">
@@ -301,6 +448,29 @@ export default function ItemDrawer({ item, onClose }) {
                     save.mutate({
                       notes: notes.trim(),
                       tags: splitList(tagsText),
+                      authors: splitList(authorsText),
+                      directors:
+                        item.type === 'book' || item.type === 'manga'
+                          ? undefined
+                          : splitList(directorsText),
+                      studios:
+                        item.type === 'book' || item.type === 'manga'
+                          ? undefined
+                          : splitList(studiosText),
+                      publisher:
+                        item.type === 'book' || item.type === 'manga'
+                          ? publisherText.trim() || undefined
+                          : undefined,
+                      cast:
+                        item.type === 'book' || item.type === 'manga'
+                          ? undefined
+                          : castText
+                              .split('\n')
+                              .map((l) => l.trim())
+                              .filter(Boolean)
+                              .map(parseCastLine)
+                              .filter(Boolean)
+                              .map((c, i) => ({ ...c, order: i })),
                       posterUrl: posterUrl || null,
                       externalRating: rating?.value ?? null,
                       ratingSource: rating?.source || 'manual',

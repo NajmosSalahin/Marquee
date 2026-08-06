@@ -1,5 +1,5 @@
 import Poster from '../ui/Poster.jsx'
-import { STATUS_LABELS, TYPE_LABELS } from '../../lib/constants.js'
+import { TYPE_LABELS, statusLabel } from '../../lib/constants.js'
 import { formatDate } from '../../lib/format.js'
 
 const SORTABLE = ['title', 'releaseYear', 'rating', 'dateAdded']
@@ -31,6 +31,7 @@ export default function ListView({ items, sort, onSort, onItemClick }) {
               </th>
             ))}
             <th className="hidden px-4 py-3 font-semibold sm:table-cell">Status</th>
+            <th className="hidden px-4 py-3 font-semibold lg:table-cell">Credits</th>
             <th className="hidden px-4 py-3 font-semibold md:table-cell">Tags</th>
           </tr>
         </thead>
@@ -64,7 +65,13 @@ export default function ListView({ items, sort, onSort, onItemClick }) {
                 {formatDate(item.dateAdded)}
               </td>
               <td className="hidden px-4 py-2.5 sm:table-cell">
-                <span className="chip">{STATUS_LABELS[item.status]}</span>
+                <span className="chip">{statusLabel(item.type, item.status)}</span>
+              </td>
+              <td className="hidden max-w-48 truncate px-4 py-2.5 text-muted lg:table-cell">
+                {(item.type === 'book' || item.type === 'manga'
+                  ? item.authors || []
+                  : item.directors || []
+                ).join(', ') || '—'}
               </td>
               <td className="hidden px-4 py-2.5 md:table-cell">
                 <div className="flex flex-wrap gap-1">
