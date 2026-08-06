@@ -61,6 +61,7 @@ export const SOURCE_LABELS = {
   omdb: 'OMDb',
   jikan: 'Jikan',
   anilist: 'AniList',
+  kitsu: 'Kitsu',
   googlebooks: 'Google Books',
   openlibrary: 'Open Library',
   manual: 'Manual',

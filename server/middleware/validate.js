@@ -32,6 +32,7 @@ export const itemValidation = [
     .isFloat({ min: 0, max: 10 })
     .withMessage('Rating must be 0–10'),
   body('genres').optional().isArray().withMessage('Genres must be a list'),
+  body('authors').optional().isArray().withMessage('Authors must be a list'),
   body('tags').optional().isArray().withMessage('Tags must be a list'),
 ]
 

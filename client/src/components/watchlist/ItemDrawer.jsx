@@ -25,6 +25,7 @@ export default function ItemDrawer({ item, onClose }) {
   const [status, setStatus] = useState(item?.status || 'plan_to_watch')
   const [notes, setNotes] = useState(item?.notes || '')
   const [tagsText, setTagsText] = useState((item?.tags || []).join(', '))
+  const [authorsText, setAuthorsText] = useState((item?.authors || []).join(', '))
   const [posterUrl, setPosterUrl] = useState(item?.posterUrl || '')
   const [rating, setRating] = useState(
     item?.externalRating != null
@@ -38,6 +39,7 @@ export default function ItemDrawer({ item, onClose }) {
     setStatus(item.status || 'plan_to_watch')
     setNotes(item.notes || '')
     setTagsText((item.tags || []).join(', '))
+    setAuthorsText((item.authors || []).join(', '))
     setPosterUrl(item.posterUrl || '')
     setRating(
       item.externalRating != null
@@ -196,6 +198,15 @@ export default function ItemDrawer({ item, onClose }) {
                       ))}
                     </div>
                   )}
+                  {(item.authors || []).length > 0 && (
+                    <div className="flex flex-wrap gap-1.5">
+                      {item.authors.map((a) => (
+                        <span key={a} className="chip">
+                          {a}
+                        </span>
+                      ))}
+                    </div>
+                  )}
                 </div>
               </div>
 
@@ -234,6 +245,21 @@ export default function ItemDrawer({ item, onClose }) {
                   <span className="label">Rating</span>
                   <RatingPicker options={ratingOptions} value={rating} onChange={setRating} />
                 </div>
+
+                {(item.type === 'book' || item.type === 'manga') && (
+                  <div>
+                    <label className="label" htmlFor="d-authors">
+                      Authors
+                    </label>
+                    <input
+                      id="d-authors"
+                      className="input"
+                      value={authorsText}
+                      onChange={(e) => setAuthorsText(e.target.value)}
+                      placeholder="Frank Herbert"
+                    />
+                  </div>
+                )}
 
                 <div>
                   <label className="label" htmlFor="d-tags">
@@ -304,6 +330,10 @@ export default function ItemDrawer({ item, onClose }) {
                     save.mutate({
                       notes: notes.trim(),
                       tags: splitList(tagsText),
+                      authors:
+                        item.type === 'book' || item.type === 'manga'
+                          ? splitList(authorsText)
+                          : undefined,
                       posterUrl: posterUrl || null,
                       externalRating: rating?.value ?? null,
                       ratingSource: rating?.source || 'manual',

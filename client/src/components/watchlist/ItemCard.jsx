@@ -29,6 +29,9 @@ export default function ItemCard({ item, onClick, className = '', showMeta = tru
           <p className="truncate text-sm font-semibold text-ink group-hover:text-accent">
             {item.title}
           </p>
+          {(item.type === 'book' || item.type === 'manga') && (item.authors || []).length > 0 && (
+            <p className="truncate text-xs text-muted/80">By {item.authors.join(', ')}</p>
+          )}
           <p className="font-mono text-xs text-muted">
             {item.releaseYear || '—'}
             <span className="mx-1 text-muted/50">·</span>

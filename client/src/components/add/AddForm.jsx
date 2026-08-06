@@ -51,6 +51,7 @@ export default function AddForm({ type, result, onDone }) {
   const [year, setYear] = useState(result?.year || '')
   const [overview, setOverview] = useState(result?.overview || '')
   const [genresText, setGenresText] = useState((result?.genres || []).join(', '))
+  const [authorsText, setAuthorsText] = useState((result?.authors || []).join(', '))
   const [posterUrl, setPosterUrl] = useState(initialPoster)
   const [rating, setRating] = useState(initialRating)
   const [status, setStatus] = useState('plan_to_watch')
@@ -85,6 +86,7 @@ export default function AddForm({ type, result, onDone }) {
           releaseYear: year ? Number(year) : undefined,
           overview: overview.trim(),
           genres: splitList(genresText),
+          authors: type === 'book' || type === 'manga' ? splitList(authorsText) : undefined,
           posterUrl: posterUrl || undefined,
           externalRating: rating?.value,
           ratingSource: rating?.source || 'manual',
@@ -158,6 +160,21 @@ export default function AddForm({ type, result, onDone }) {
           </div>
         </div>
       </div>
+
+      {(type === 'book' || type === 'manga') && (
+        <div>
+          <label className="label" htmlFor="af-authors">
+            Authors
+          </label>
+          <input
+            id="af-authors"
+            className="input"
+            value={authorsText}
+            onChange={(e) => setAuthorsText(e.target.value)}
+            placeholder="Frank Herbert"
+          />
+        </div>
+      )}
 
       <div>
         <label className="label" htmlFor="af-genres">

@@ -5,6 +5,7 @@ const SOURCE_STYLE = {
   omdb: 'text-amber-300/90',
   jikan: 'text-violet-300/90',
   anilist: 'text-teal-300/90',
+  kitsu: 'text-pink-300/90',
   googlebooks: 'text-blue-300/90',
   openlibrary: 'text-orange-300/90',
   manual: 'text-muted',

@@ -36,11 +36,14 @@ function ResultCard({ result, onPick }) {
 
 export default function AddSearch({ onPick, onManual }) {
   const [type, setType] = useState('movie')
+  const [mode, setMode] = useState('title')
   const [q, setQ] = useState('')
   const debouncedQ = useDebounce(q, 400)
+  const isReadingType = type === 'book' || type === 'manga'
+  const isAuthor = mode === 'author' && isReadingType
   const query = useQuery({
-    queryKey: ['search', type, debouncedQ],
-    queryFn: () => searchTitle(type, debouncedQ),
+    queryKey: ['search', type, mode, debouncedQ],
+    queryFn: () => searchTitle(type, debouncedQ, isAuthor),
     enabled: debouncedQ.trim().length >= 2,
   })
 
@@ -69,6 +72,28 @@ export default function AddSearch({ onPick, onManual }) {
         ))}
       </div>
 
+      {isReadingType && (
+        <div className="flex gap-2" role="group" aria-label="Search by">
+          {[
+            { id: 'title', label: 'Title' },
+            { id: 'author', label: 'Author' },
+          ].map((m) => (
+            <button
+              key={m.id}
+              onClick={() => setMode(m.id)}
+              aria-pressed={mode === m.id}
+              className={`rounded-lg px-3 py-1 text-xs font-semibold transition-colors ${
+                mode === m.id
+                  ? 'bg-accent text-[#14100a]'
+                  : 'hairline bg-surface text-muted hover:text-ink'
+              }`}
+            >
+              {m.label}
+            </button>
+          ))}
+        </div>
+      )}
+
       <div className="relative">
         <Search
           className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted"
@@ -76,7 +101,11 @@ export default function AddSearch({ onPick, onManual }) {
         />
         <input
           className="input pl-9"
-          placeholder={`Search ${TYPE_LABELS[type]}s — ${TYPE_SOURCE_HINTS[type]}`}
+          placeholder={
+            isAuthor
+              ? `Search ${TYPE_LABELS[type]}s by author name…`
+              : `Search ${TYPE_LABELS[type]}s — ${TYPE_SOURCE_HINTS[type]}`
+          }
           value={q}
           onChange={(e) => setQ(e.target.value)}
           autoFocus
@@ -120,7 +149,11 @@ export default function AddSearch({ onPick, onManual }) {
             <EmptyState
               icon={Search}
               title="Nothing turned up"
-              body={`No ${TYPE_LABELS[type]} matched “${debouncedQ}” on either source. Add it by hand instead.`}
+              body={
+                isAuthor
+                  ? `No ${TYPE_LABELS[type]} by “${debouncedQ}” came up on either source. Add it by hand instead.`
+                  : `No ${TYPE_LABELS[type]} matched “${debouncedQ}” on either source. Add it by hand instead.`
+              }
               action={
                 <button onClick={onManual} className="btn btn-ghost">
                   <PenLine className="h-4 w-4" aria-hidden="true" /> Add manually

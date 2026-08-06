@@ -8,6 +8,7 @@ const watchlistItemSchema = new mongoose.Schema({
   overview: String,
   releaseYear: Number,
   genres: [String],
+  authors: [String],
   externalRating: Number,
   ratingSource: {
     type: String,

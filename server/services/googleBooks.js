@@ -1,4 +1,4 @@
-async function fetchWithRetry(url, attempts = 3) {
+async function fetchWithRetry(url, attempts = 4) {
   for (let i = 0; i < attempts; i++) {
     try {
       const res = await fetch(url)
@@ -9,16 +9,18 @@ async function fetchWithRetry(url, attempts = 3) {
     } catch (err) {
       if (i === attempts - 1) throw err
     }
-    await new Promise((r) => setTimeout(r, 1500 * (i + 1)))
+    await new Promise((r) => setTimeout(r, 1500 * 2 ** i))
   }
   throw new Error('Google Books unavailable')
 }
 
-export async function searchGoogleBooks(_type, query) {
+export async function searchGoogleBooks(_type, query, opts = {}) {
   const url = new URL('https://www.googleapis.com/books/v1/volumes')
-  url.searchParams.set('q', query)
+  url.searchParams.set('q', opts.author ? `inauthor:${query}` : query)
   url.searchParams.set('maxResults', '6')
   url.searchParams.set('langRestrict', 'en')
+  const apiKey = process.env.GOOGLE_BOOKS_API_KEY
+  if (apiKey) url.searchParams.set('key', apiKey)
 
   const res = await fetchWithRetry(url)
   const data = await res.json()
@@ -34,6 +36,7 @@ export async function searchGoogleBooks(_type, query) {
       title: (v.title || '').trim(),
       year,
       overview: (v.description || '').trim(),
+      authors: (v.authors || []).slice(0, 5),
       genres: (v.categories || []).map((c) => c.split(' / ')[0].trim()),
       rating,
       posters: [thumb]

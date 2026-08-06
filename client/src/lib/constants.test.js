@@ -31,7 +31,7 @@ describe('constants', () => {
   })
 
   it('labels every known source', () => {
-    for (const s of ['tmdb', 'omdb', 'jikan', 'anilist', 'googlebooks', 'openlibrary', 'manual']) {
+    for (const s of ['tmdb', 'omdb', 'jikan', 'anilist', 'kitsu', 'googlebooks', 'openlibrary', 'manual']) {
       expect(SOURCE_LABELS[s]).toBeTruthy()
     }
   })

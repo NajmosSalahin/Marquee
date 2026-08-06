@@ -31,6 +31,7 @@ export default function ListView({ items, sort, onSort, onItemClick }) {
               </th>
             ))}
             <th className="hidden px-4 py-3 font-semibold sm:table-cell">Status</th>
+            <th className="hidden px-4 py-3 font-semibold lg:table-cell">Author</th>
             <th className="hidden px-4 py-3 font-semibold md:table-cell">Tags</th>
           </tr>
         </thead>
@@ -65,6 +66,9 @@ export default function ListView({ items, sort, onSort, onItemClick }) {
               </td>
               <td className="hidden px-4 py-2.5 sm:table-cell">
                 <span className="chip">{statusLabel(item.type, item.status)}</span>
+              </td>
+              <td className="hidden max-w-48 truncate px-4 py-2.5 text-muted lg:table-cell">
+                {(item.authors || []).join(', ') || '—'}
               </td>
               <td className="hidden px-4 py-2.5 md:table-cell">
                 <div className="flex flex-wrap gap-1">
